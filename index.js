@@ -154,6 +154,31 @@ window.addEventListener('mouseup', e => {
   }
 });
 
+// mobile
+canvas.addEventListener('touchstart', e => {
+  x = e.clientX - rect.left;
+  y = e.clientY - rect.top;
+  isDrawing = true;
+});
+
+canvas.addEventListener('touchmove', e => {
+  if (isDrawing === true) {
+    drawPattern(e, x, y);
+
+    x = e.clientX - rect.left;
+    y = e.clientY - rect.top;
+  }
+});
+
+window.addEventListener('touchend', e => {
+  if (isDrawing === true) {
+    drawLine(context, x, y, e.clientX - rect.left, e.clientY - rect.top);
+    x = 0;
+    y = 0;
+    isDrawing = false;
+  }
+});
+
 function drawLine(context, x1, y1, x2, y2) {
   let color = colorPalette[Math.floor(Math.random() * colorPalette.length)];
 
