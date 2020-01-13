@@ -1,0 +1,229 @@
+function patternOne(x1, y1, x2, y2) {
+  drawLine(context, x1, y1, x2 - rect.left, y2 - rect.top);
+
+  drawLine(
+    context,
+    rect.right - x1,
+    rect.bottom - y1,
+    rect.right - x2,
+    rect.bottom - y2
+  );
+
+  drawLine(context, x1, rect.bottom - y1, x2 - rect.left, rect.bottom - y2);
+
+  drawLine(context, rect.right - x1, y1, rect.right - x2, y2 - rect.top);
+}
+
+function patternTwo(x1, y1, x2, y2) {
+  drawLine(context, x1, y1, x2 - rect.left, y2 - rect.top);
+
+  drawLine(
+    context,
+    x1 + rect.right / 2,
+    y1,
+    x2 + rect.right / 2,
+    y2 - rect.top
+  );
+
+  drawLine(
+    context,
+    x1 - rect.right / 2,
+    y1,
+    x2 - rect.right / 2,
+    y2 - rect.top
+  );
+
+  drawLine(
+    context,
+    rect.right / 2 - x1,
+    rect.bottom - y1,
+    rect.right / 2 - x2,
+    rect.bottom - y2
+  );
+
+  drawLine(
+    context,
+    rect.right - x1,
+    rect.bottom - y1,
+    rect.right - x2,
+    rect.bottom - y2
+  );
+
+  drawLine(
+    context,
+    1.5 * rect.right - x1,
+    rect.bottom - y1,
+    1.5 * rect.right - x2,
+    rect.bottom - y2
+  );
+}
+
+let drawPattern = patternOne;
+
+const beachPalette = ['#EAEFF9', '#6C8D9B', '#D3CEAD', '#E6E1C5'];
+const forestPalette = ['#B9FFAD', '#3F633D', '#514E3C', '#513535', '#7A0000'];
+
+let colorPalette = beachPalette;
+
+document.addEventListener('keydown', () => changeSettings(event));
+
+function changeSettings() {
+  switch (event.code) {
+    case 'Digit1':
+      colorPalette = beachPalette;
+      break;
+    case 'Digit2':
+      colorPalette = forestPalette;
+      break;
+    case 'Digit9':
+      drawPattern = patternOne;
+      break;
+    case 'Digit0':
+      drawPattern = patternTwo;
+      break;
+  }
+}
+
+let canvas = document.createElement('canvas');
+let frame = document.querySelector('#frame');
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+frame.appendChild(canvas);
+
+let context = canvas.getContext('2d');
+context.lineJoin = context.lineCap = 'round';
+
+// Set size of background gradient
+let gradient = context.createLinearGradient(
+  0,
+  0,
+  window.innerWidth,
+  window.innerHeight
+);
+
+// Add three color stops
+gradient.addColorStop(0, '#A1ACC4');
+gradient.addColorStop(0.5, '#97A7C9');
+gradient.addColorStop(1, '#BFD4FF');
+
+// Set the fill style and draw a rectangle
+context.fillStyle = gradient;
+context.fillRect(0, 0, window.innerWidth, window.innerHeight);
+
+const rect = canvas.getBoundingClientRect();
+
+let isDrawing = false;
+let x = 0;
+let y = 0;
+
+canvas.addEventListener('mousedown', e => {
+  x = e.clientX - rect.left;
+  y = e.clientY - rect.top;
+  isDrawing = true;
+});
+
+canvas.addEventListener('mousemove', e => {
+  if (isDrawing === true) {
+    drawPattern(x, y, e.clientX, e.clientY);
+
+    x = e.clientX;
+    y = e.clientY;
+  }
+});
+
+window.addEventListener('mouseup', e => {
+  if (isDrawing === true) {
+    drawPattern(x, y, e.clientX, e.clientY);
+    x = 0;
+    y = 0;
+    isDrawing = false;
+  }
+});
+
+// mobile
+let ongoingTouches = [];
+
+canvas.addEventListener(
+  'touchstart',
+  e => {
+    e.preventDefault();
+    let touches = e.changedTouches;
+    for (let i = 0; i < touches.length; i++) {
+      ongoingTouches.push(copyTouch(touches[i]));
+    }
+  },
+  false
+);
+
+canvas.addEventListener(
+  'touchmove',
+  e => {
+    e.preventDefault();
+    let touches = e.changedTouches;
+
+    for (let i = 0; i < touches.length; i++) {
+      let idx = ongoingTouchIndexById(touches[i].identifier);
+
+      if (idx >= 0) {
+        let x1 = ongoingTouches[idx].pageX;
+        let y1 = ongoingTouches[idx].pageY;
+
+        let x2 = touches[i].pageX;
+        let y2 = touches[i].pageY;
+
+        drawPattern(x1, y1, x2, y2);
+
+        ongoingTouches.splice(idx, 1, copyTouch(touches[i]));
+      }
+    }
+  },
+  false
+);
+
+window.addEventListener('touchend', e => {
+  event.preventDefault();
+  let touches = e.changedTouches;
+  for (let i = 0; i < touches.length; i++) {
+    let idx = ongoingTouchIndexById(touches[i].identifier);
+    if (idx >= 0) {
+      let x1 = ongoingTouches[idx].pageX;
+      let y1 = ongoingTouches[idx].pageY;
+
+      let x2 = touches[i].pageX;
+      let y2 = touches[i].pageY;
+
+      drawPattern(x1, y1, x2, y2);
+
+      ongoingTouches.splice(idx, 1);
+    }
+  }
+});
+
+function copyTouch({ identifier, pageX, pageY }) {
+  return { identifier, pageX, pageY };
+}
+
+function ongoingTouchIndexById(idToFind) {
+  for (let i = 0; i < ongoingTouches.length; i++) {
+    let id = ongoingTouches[i].identifier;
+
+    if (id == idToFind) {
+      return i;
+    }
+  }
+  return -1; // not found
+}
+
+function drawLine(context, x1, y1, x2, y2) {
+  let color = colorPalette[Math.floor(Math.random() * colorPalette.length)];
+
+  context.beginPath();
+  context.strokeStyle = color;
+  context.lineWidth = 15;
+  context.moveTo(x1, y1);
+  context.lineTo(x2, y2);
+  context.stroke();
+  context.closePath();
+}
