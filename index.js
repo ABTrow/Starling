@@ -1,4 +1,4 @@
-function patternOne(x1, y1, x2, y2) {
+function patternOne(context, x1, y1, x2, y2) {
   drawLine(context, x1, y1, x2 - rect.left, y2 - rect.top);
 
   drawLine(
@@ -14,7 +14,7 @@ function patternOne(x1, y1, x2, y2) {
   drawLine(context, rect.right - x1, y1, rect.right - x2, y2 - rect.top);
 }
 
-function patternTwo(x1, y1, x2, y2) {
+function patternTwo(context, x1, y1, x2, y2) {
   drawLine(context, x1, y1, x2 - rect.left, y2 - rect.top);
 
   drawLine(
@@ -65,6 +65,18 @@ const forestPalette = ['#B9FFAD', '#3F633D', '#514E3C', '#513535', '#7A0000'];
 
 let colorPalette = beachPalette;
 
+const startingMessage = document.querySelector('#starting-message');
+let messageVisible = true;
+
+const menu = document.querySelector('#menu-hidden');
+let menuVisible = false;
+
+function toggleMenu() {
+  menuVisible = !menuVisible;
+  if (menu.id === 'menu-hidden') menu.id = 'menu';
+  else menu.id = 'menu-hidden';
+}
+
 document.addEventListener('keydown', () => changeSettings(event));
 
 function changeSettings() {
@@ -80,6 +92,9 @@ function changeSettings() {
       break;
     case 'Digit0':
       drawPattern = patternTwo;
+      break;
+    case 'Space':
+      toggleMenu();
       break;
   }
 }
@@ -119,6 +134,10 @@ let x = 0;
 let y = 0;
 
 canvas.addEventListener('mousedown', e => {
+  if (messageVisible) {
+    messageVisible = false;
+    startingMessage.id = 'starting-message-hidden';
+  }
   x = e.clientX - rect.left;
   y = e.clientY - rect.top;
   isDrawing = true;
@@ -126,7 +145,7 @@ canvas.addEventListener('mousedown', e => {
 
 canvas.addEventListener('mousemove', e => {
   if (isDrawing === true) {
-    drawPattern(x, y, e.clientX, e.clientY);
+    drawPattern(context, x, y, e.clientX, e.clientY);
 
     x = e.clientX;
     y = e.clientY;
@@ -135,7 +154,7 @@ canvas.addEventListener('mousemove', e => {
 
 window.addEventListener('mouseup', e => {
   if (isDrawing === true) {
-    drawPattern(x, y, e.clientX, e.clientY);
+    drawPattern(context, x, y, e.clientX, e.clientY);
     x = 0;
     y = 0;
     isDrawing = false;
@@ -148,6 +167,11 @@ let ongoingTouches = [];
 canvas.addEventListener(
   'touchstart',
   e => {
+    if (messageVisible) {
+      messageVisible = false;
+      startingMessage.id = 'starting-message-hidden';
+    }
+
     e.preventDefault();
     let touches = e.changedTouches;
     for (let i = 0; i < touches.length; i++) {
@@ -173,7 +197,7 @@ canvas.addEventListener(
         let x2 = touches[i].pageX;
         let y2 = touches[i].pageY;
 
-        drawPattern(x1, y1, x2, y2);
+        drawPattern(context, x1, y1, x2, y2);
 
         ongoingTouches.splice(idx, 1, copyTouch(touches[i]));
       }
@@ -194,7 +218,7 @@ window.addEventListener('touchend', e => {
       let x2 = touches[i].pageX;
       let y2 = touches[i].pageY;
 
-      drawPattern(x1, y1, x2, y2);
+      drawPattern(context, x1, y1, x2, y2);
 
       ongoingTouches.splice(idx, 1);
     }
