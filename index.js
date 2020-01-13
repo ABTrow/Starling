@@ -1,72 +1,60 @@
-function patternOne(e, x, y) {
-  drawLine(context, x, y, e.clientX - rect.left, e.clientY - rect.top);
+function patternOne(x1, y1, x2, y2) {
+  drawLine(context, x1, y1, x2 - rect.left, y2 - rect.top);
 
   drawLine(
     context,
-    rect.right - x,
-    rect.bottom - y,
-    rect.right - e.clientX,
-    rect.bottom - e.clientY
+    rect.right - x1,
+    rect.bottom - y1,
+    rect.right - x2,
+    rect.bottom - y2
   );
 
-  drawLine(
-    context,
-    x,
-    rect.bottom - y,
-    e.clientX - rect.left,
-    rect.bottom - e.clientY
-  );
+  drawLine(context, x1, rect.bottom - y1, x2 - rect.left, rect.bottom - y2);
 
-  drawLine(
-    context,
-    rect.right - x,
-    y,
-    rect.right - e.clientX,
-    e.clientY - rect.top
-  );
+  drawLine(context, rect.right - x1, y1, rect.right - x2, y2 - rect.top);
 }
 
-function patternTwo(e, x, y) {
-  drawLine(context, x, y, e.clientX - rect.left, e.clientY - rect.top);
+function patternTwo(x1, y1, x2, y2) {
+  drawLine(context, x1, y1, x2 - rect.left, y2 - rect.top);
 
   drawLine(
     context,
-    x + rect.right / 2,
-    y,
-    e.clientX + rect.right / 2,
-    e.clientY - rect.top
+    x1 + rect.right / 2,
+    y1,
+    x2 + rect.right / 2,
+    y2 - rect.top
   );
 
   drawLine(
     context,
-    x - rect.right / 2,
-    y,
-    e.clientX - rect.right / 2,
-    e.clientY - rect.top
+    x1 - rect.right / 2,
+    y1,
+    x2 - rect.right / 2,
+    y2 - rect.top
   );
 
   drawLine(
     context,
-    rect.right / 2 - x,
-    rect.bottom - y,
-    rect.right / 2 - e.clientX,
-    rect.bottom - e.clientY
+    rect.right / 2 - x1,
+    rect.bottom - y1,
+    rect.right / 2 - x2,
+    rect.bottom - y2
   );
 
   drawLine(
     context,
-    rect.right - x,
-    rect.bottom - y,
-    rect.right - e.clientX,
-    rect.bottom - e.clientY
+    rect.right - x1,
+    rect.bottom - y1,
+    rect.right - x2,
+    rect.bottom - y2
   );
 
   drawLine(
     context,
-    1.5 * rect.right - x,
-    rect.bottom - y,
-    1.5 * rect.right - e.clientX,
-    rect.bottom - e.clientY
+    1.5 * rect.right - x1,
+    rect.bottom - y1,
+    1.5 * rect.right - x2,
+    rect.bottom - y2
   );
 }
 
@@ -138,16 +126,16 @@ canvas.addEventListener('mousedown', e => {
 
 canvas.addEventListener('mousemove', e => {
   if (isDrawing === true) {
-    drawPattern(e, x, y);
+    drawPattern(x, y, e.clientX, e.clientY);
 
-    x = e.clientX - rect.left;
-    y = e.clientY - rect.top;
+    x = e.clientX;
+    y = e.clientY;
   }
 });
 
 window.addEventListener('mouseup', e => {
   if (isDrawing === true) {
-    drawLine(context, x, y, e.clientX - rect.left, e.clientY - rect.top);
+    drawPattern(x, y, e.clientX, e.clientY);
     x = 0;
     y = 0;
     isDrawing = false;
@@ -155,29 +143,78 @@ window.addEventListener('mouseup', e => {
 });
 
 // mobile
-canvas.addEventListener('touchstart', e => {
-  x = e.clientX - rect.left;
-  y = e.clientY - rect.top;
-  isDrawing = true;
-});
+let ongoingTouches = [];
 
-canvas.addEventListener('touchmove', e => {
-  if (isDrawing === true) {
-    drawPattern(e, x, y);
+canvas.addEventListener(
+  'touchstart',
+  e => {
+    e.preventDefault();
+    let touches = e.changedTouches;
+    for (let i = 0; i < touches.length; i++) {
+      ongoingTouches.push(copyTouch(touches[i]));
+    }
+  },
+  false
+);
 
-    x = e.clientX - rect.left;
-    y = e.clientY - rect.top;
-  }
-});
+canvas.addEventListener(
+  'touchmove',
+  e => {
+    e.preventDefault();
+    let touches = e.changedTouches;
+
+    for (let i = 0; i < touches.length; i++) {
+      let idx = ongoingTouchIndexById(touches[i].identifier);
+
+      if (idx >= 0) {
+        let x1 = ongoingTouches[idx].pageX;
+        let y1 = ongoingTouches[idx].pageY;
+
+        let x2 = touches[i].pageX;
+        let y2 = touches[i].pageY;
+
+        drawPattern(x1, y1, x2, y2);
+
+        ongoingTouches.splice(idx, 1, copyTouch(touches[i]));
+      }
+    }
+  },
+  false
+);
 
 window.addEventListener('touchend', e => {
-  if (isDrawing === true) {
-    drawLine(context, x, y, e.clientX - rect.left, e.clientY - rect.top);
-    x = 0;
-    y = 0;
-    isDrawing = false;
+  event.preventDefault();
+  let touches = e.changedTouches;
+  for (let i = 0; i < touches.length; i++) {
+    let idx = ongoingTouchIndexById(touches[i].identifier);
+    if (idx >= 0) {
+      let x1 = ongoingTouches[idx].pageX;
+      let y1 = ongoingTouches[idx].pageY;
+
+      let x2 = touches[i].pageX;
+      let y2 = touches[i].pageY;
+
+      drawPattern(x1, y1, x2, y2);
+
+      ongoingTouches.splice(idx, 1);
+    }
   }
 });
+
+function copyTouch({ identifier, pageX, pageY }) {
+  return { identifier, pageX, pageY };
+}
+
+function ongoingTouchIndexById(idToFind) {
+  for (let i = 0; i < ongoingTouches.length; i++) {
+    let id = ongoingTouches[i].identifier;
+
+    if (id == idToFind) {
+      return i;
+    }
+  }
+  return -1; // not found
+}
 
 function drawLine(context, x1, y1, x2, y2) {
   let color = colorPalette[Math.floor(Math.random() * colorPalette.length)];
