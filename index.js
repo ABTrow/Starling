@@ -1,3 +1,5 @@
+window.screen.orientation.lock('any').catch(console.error);
+
 const patterns = {
   one: function patternOne(context, x1, y1, x2, y2) {
     drawLine(context, x1, y1, x2 - rect.left, y2 - rect.top);
