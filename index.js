@@ -126,7 +126,9 @@ function changeSettings() {
 }
 
 window.addEventListener('devicemotion', e => {
-  toggleMenu();
+  if (e.acceleration.x > 0.1) {
+    toggleMenu();
+  }
 });
 
 let canvas = document.createElement('canvas');
