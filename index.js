@@ -117,7 +117,7 @@ function changeSettings() {
       drawPattern = patterns.one;
       break;
     case 'Digit0':
-      drawPattern = pattern.two;
+      drawPattern = patterns.two;
       break;
     case 'Space':
       toggleMenu();
