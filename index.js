@@ -126,7 +126,7 @@ function changeSettings() {
 }
 
 window.addEventListener('devicemotion', e => {
-  if (e.acceleration.x > 0.1) {
+  if (e.acceleration.x > 10) {
     toggleMenu();
   }
 });
