@@ -126,9 +126,7 @@ function changeSettings() {
 }
 
 window.addEventListener('devicemotion', e => {
-  if (e.acceleration.x > 10) {
-    startingMessage.innerHTML = e.acceleration.x;
-  }
+  startingMessage.innerHTML = e.acceleration.x;
 });
 
 let canvas = document.createElement('canvas');
