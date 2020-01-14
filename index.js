@@ -125,6 +125,10 @@ function changeSettings() {
   }
 }
 
+window.addEventListener('devicemotion', e => {
+  toggleMenu();
+});
+
 let canvas = document.createElement('canvas');
 let frame = document.querySelector('#frame');
 
