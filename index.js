@@ -126,15 +126,11 @@ function changeSettings() {
 }
 
 let shakeEvent = new Shake({
-  threshold: 1, // optional shake strength threshold
+  threshold: 5, // optional shake strength threshold
   timeout: 1000, // optional, determines the frequency of event generation
 });
 shakeEvent.start();
-window.addEventListener('shake', testFunc, false);
-
-function testFunc() {
-  window.alert('yayyayayay');
-}
+window.addEventListener('shake', toggleMenu, false);
 
 let canvas = document.createElement('canvas');
 let frame = document.querySelector('#frame');
