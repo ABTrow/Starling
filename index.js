@@ -125,11 +125,16 @@ function changeSettings() {
   }
 }
 
-window.addEventListener('devicemotion', e => {
-  if (Math.abs(e.acceleration.x) > 1) {
-    toggleMenu();
-  }
+let shakeEvent = new Shake({
+  threshold: 1, // optional shake strength threshold
+  timeout: 1000, // optional, determines the frequency of event generation
 });
+shakeEvent.start();
+window.addEventListener('shake', testFunc, false);
+
+function testFunc() {
+  window.alert('yayyayayay');
+}
 
 let canvas = document.createElement('canvas');
 let frame = document.querySelector('#frame');
