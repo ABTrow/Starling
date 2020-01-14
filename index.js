@@ -1,69 +1,73 @@
-function patternOne(context, x1, y1, x2, y2) {
-  drawLine(context, x1, y1, x2 - rect.left, y2 - rect.top);
+const patterns = {
+  one: function patternOne(context, x1, y1, x2, y2) {
+    drawLine(context, x1, y1, x2 - rect.left, y2 - rect.top);
 
-  drawLine(
-    context,
-    rect.right - x1,
-    rect.bottom - y1,
-    rect.right - x2,
-    rect.bottom - y2
-  );
+    drawLine(
+      context,
+      rect.right - x1,
+      rect.bottom - y1,
+      rect.right - x2,
+      rect.bottom - y2
+    );
 
-  drawLine(context, x1, rect.bottom - y1, x2 - rect.left, rect.bottom - y2);
+    drawLine(context, x1, rect.bottom - y1, x2 - rect.left, rect.bottom - y2);
 
-  drawLine(context, rect.right - x1, y1, rect.right - x2, y2 - rect.top);
-}
+    drawLine(context, rect.right - x1, y1, rect.right - x2, y2 - rect.top);
+  },
 
-function patternTwo(context, x1, y1, x2, y2) {
-  drawLine(context, x1, y1, x2 - rect.left, y2 - rect.top);
+  two: function patternTwo(context, x1, y1, x2, y2) {
+    drawLine(context, x1, y1, x2 - rect.left, y2 - rect.top);
 
-  drawLine(
-    context,
-    x1 + rect.right / 2,
-    y1,
-    x2 + rect.right / 2,
-    y2 - rect.top
-  );
+    drawLine(
+      context,
+      x1 + rect.right / 2,
+      y1,
+      x2 + rect.right / 2,
+      y2 - rect.top
+    );
 
-  drawLine(
-    context,
-    x1 - rect.right / 2,
-    y1,
-    x2 - rect.right / 2,
-    y2 - rect.top
-  );
+    drawLine(
+      context,
+      x1 - rect.right / 2,
+      y1,
+      x2 - rect.right / 2,
+      y2 - rect.top
+    );
 
-  drawLine(
-    context,
-    rect.right / 2 - x1,
-    rect.bottom - y1,
-    rect.right / 2 - x2,
-    rect.bottom - y2
-  );
+    drawLine(
+      context,
+      rect.right / 2 - x1,
+      rect.bottom - y1,
+      rect.right / 2 - x2,
+      rect.bottom - y2
+    );
 
-  drawLine(
-    context,
-    rect.right - x1,
-    rect.bottom - y1,
-    rect.right - x2,
-    rect.bottom - y2
-  );
+    drawLine(
+      context,
+      rect.right - x1,
+      rect.bottom - y1,
+      rect.right - x2,
+      rect.bottom - y2
+    );
 
-  drawLine(
-    context,
-    1.5 * rect.right - x1,
-    rect.bottom - y1,
-    1.5 * rect.right - x2,
-    rect.bottom - y2
-  );
-}
+    drawLine(
+      context,
+      1.5 * rect.right - x1,
+      rect.bottom - y1,
+      1.5 * rect.right - x2,
+      rect.bottom - y2
+    );
+  },
+};
 
-let drawPattern = patternOne;
+let drawPattern = patterns.one;
 
-const beachPalette = ['#EAEFF9', '#6C8D9B', '#D3CEAD', '#E6E1C5'];
-const forestPalette = ['#B9FFAD', '#3F633D', '#514E3C', '#513535', '#7A0000'];
+const palettes = {
+  beach: ['#EAEFF9', '#6C8D9B', '#D3CEAD', '#E6E1C5'],
+  forest: ['#B9FFAD', '#3F633D', '#514E3C', '#513535', '#7A0000'],
+};
 
-let colorPalette = beachPalette;
+let colorPalette = palettes.beach;
 
 const startingMessage = document.querySelector('#starting-message');
 let messageVisible = true;
@@ -77,21 +81,43 @@ function toggleMenu() {
   else menu.id = 'menu-hidden';
 }
 
+const buttons = menu.querySelectorAll('button');
+
+buttons.forEach(button => {
+  button.addEventListener('click', e => {
+    e.preventDefault();
+    let target = e.target;
+    if (target.dataset.palette) {
+      colorPalette = palettes[target.dataset.palette];
+    } else if (target.dataset.pattern) {
+      drawPattern = patterns[target.dataset.pattern];
+    }
+  });
+  button.addEventListener('touchstart', e => {
+    let target = e.changedTouches[0].target;
+    if (target.dataset.palette) {
+      colorPalette = palettes[target.dataset.palette];
+    } else if (target.dataset.pattern) {
+      drawPattern = patterns[target.dataset.pattern];
+    }
+  });
+});
+
 document.addEventListener('keydown', () => changeSettings(event));
 
 function changeSettings() {
   switch (event.code) {
     case 'Digit1':
-      colorPalette = beachPalette;
+      colorPalette = palettes.beach;
       break;
     case 'Digit2':
-      colorPalette = forestPalette;
+      colorPalette = palettes.forest;
       break;
     case 'Digit9':
-      drawPattern = patternOne;
+      drawPattern = patterns.one;
       break;
     case 'Digit0':
-      drawPattern = patternTwo;
+      drawPattern = pattern.two;
       break;
     case 'Space':
       toggleMenu();
