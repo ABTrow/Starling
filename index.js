@@ -1,88 +1,133 @@
-function patternOne(x1, y1, x2, y2) {
-  drawLine(context, x1, y1, x2 - rect.left, y2 - rect.top);
+const patterns = {
+  one: function patternOne(context, x1, y1, x2, y2) {
+    drawLine(context, x1, y1, x2 - rect.left, y2 - rect.top);
 
-  drawLine(
-    context,
-    rect.right - x1,
-    rect.bottom - y1,
-    rect.right - x2,
-    rect.bottom - y2
-  );
+    drawLine(
+      context,
+      rect.right - x1,
+      rect.bottom - y1,
+      rect.right - x2,
+      rect.bottom - y2
+    );
 
-  drawLine(context, x1, rect.bottom - y1, x2 - rect.left, rect.bottom - y2);
+    drawLine(context, x1, rect.bottom - y1, x2 - rect.left, rect.bottom - y2);
 
-  drawLine(context, rect.right - x1, y1, rect.right - x2, y2 - rect.top);
+    drawLine(context, rect.right - x1, y1, rect.right - x2, y2 - rect.top);
+  },
+
+  two: function patternTwo(context, x1, y1, x2, y2) {
+    drawLine(context, x1, y1, x2 - rect.left, y2 - rect.top);
+
+    drawLine(
+      context,
+      x1 + rect.right / 2,
+      y1,
+      x2 + rect.right / 2,
+      y2 - rect.top
+    );
+
+    drawLine(
+      context,
+      x1 - rect.right / 2,
+      y1,
+      x2 - rect.right / 2,
+      y2 - rect.top
+    );
+
+    drawLine(
+      context,
+      rect.right / 2 - x1,
+      rect.bottom - y1,
+      rect.right / 2 - x2,
+      rect.bottom - y2
+    );
+
+    drawLine(
+      context,
+      rect.right - x1,
+      rect.bottom - y1,
+      rect.right - x2,
+      rect.bottom - y2
+    );
+
+    drawLine(
+      context,
+      1.5 * rect.right - x1,
+      rect.bottom - y1,
+      1.5 * rect.right - x2,
+      rect.bottom - y2
+    );
+  },
+};
+
+let drawPattern = patterns.one;
+
+const palettes = {
+  beach: ['#EAEFF9', '#6C8D9B', '#D3CEAD', '#E6E1C5'],
+  forest: ['#B9FFAD', '#3F633D', '#514E3C', '#513535', '#7A0000'],
+};
+
+let colorPalette = palettes.beach;
+
+const startingMessage = document.querySelector('#starting-message');
+let messageVisible = true;
+
+const menu = document.querySelector('#menu-hidden');
+let menuVisible = false;
+
+function toggleMenu() {
+  menuVisible = !menuVisible;
+  if (menu.id === 'menu-hidden') menu.id = 'menu';
+  else menu.id = 'menu-hidden';
 }
 
-function patternTwo(x1, y1, x2, y2) {
-  drawLine(context, x1, y1, x2 - rect.left, y2 - rect.top);
+const buttons = menu.querySelectorAll('button');
 
-  drawLine(
-    context,
-    x1 + rect.right / 2,
-    y1,
-    x2 + rect.right / 2,
-    y2 - rect.top
-  );
-
-  drawLine(
-    context,
-    x1 - rect.right / 2,
-    y1,
-    x2 - rect.right / 2,
-    y2 - rect.top
-  );
-
-  drawLine(
-    context,
-    rect.right / 2 - x1,
-    rect.bottom - y1,
-    rect.right / 2 - x2,
-    rect.bottom - y2
-  );
-
-  drawLine(
-    context,
-    rect.right - x1,
-    rect.bottom - y1,
-    rect.right - x2,
-    rect.bottom - y2
-  );
-
-  drawLine(
-    context,
-    1.5 * rect.right - x1,
-    rect.bottom - y1,
-    1.5 * rect.right - x2,
-    rect.bottom - y2
-  );
-}
-
-let drawPattern = patternOne;
-
-const beachPalette = ['#EAEFF9', '#6C8D9B', '#D3CEAD', '#E6E1C5'];
-const forestPalette = ['#B9FFAD', '#3F633D', '#514E3C', '#513535', '#7A0000'];
-
-let colorPalette = beachPalette;
+buttons.forEach(button => {
+  button.addEventListener('click', e => {
+    e.preventDefault();
+    let target = e.target;
+    if (target.dataset.palette) {
+      colorPalette = palettes[target.dataset.palette];
+    } else if (target.dataset.pattern) {
+      drawPattern = patterns[target.dataset.pattern];
+    }
+  });
+  button.addEventListener('touchstart', e => {
+    let target = e.changedTouches[0].target;
+    if (target.dataset.palette) {
+      colorPalette = palettes[target.dataset.palette];
+    } else if (target.dataset.pattern) {
+      drawPattern = patterns[target.dataset.pattern];
+    }
+  });
+});
 
 document.addEventListener('keydown', () => changeSettings(event));
 
 function changeSettings() {
   switch (event.code) {
     case 'Digit1':
-      colorPalette = beachPalette;
+      colorPalette = palettes.beach;
       break;
     case 'Digit2':
-      colorPalette = forestPalette;
+      colorPalette = palettes.forest;
       break;
     case 'Digit9':
-      drawPattern = patternOne;
+      drawPattern = patterns.one;
       break;
     case 'Digit0':
-      drawPattern = patternTwo;
+      drawPattern = pattern.two;
+      break;
+    case 'Space':
+      toggleMenu();
       break;
   }
 }
+
+window.addEventListener('devicemotion', e => {
+  toggleMenu();
+});
 
 let canvas = document.createElement('canvas');
 let frame = document.querySelector('#frame');
@@ -119,6 +164,10 @@ let x = 0;
 let y = 0;
 
 canvas.addEventListener('mousedown', e => {
+  if (messageVisible) {
+    messageVisible = false;
+    startingMessage.id = 'starting-message-hidden';
+  }
   x = e.clientX - rect.left;
   y = e.clientY - rect.top;
   isDrawing = true;
@@ -126,7 +175,7 @@ canvas.addEventListener('mousedown', e => {
 
 canvas.addEventListener('mousemove', e => {
   if (isDrawing === true) {
-    drawPattern(x, y, e.clientX, e.clientY);
+    drawPattern(context, x, y, e.clientX, e.clientY);
 
     x = e.clientX;
     y = e.clientY;
@@ -135,7 +184,7 @@ canvas.addEventListener('mousemove', e => {
 
 window.addEventListener('mouseup', e => {
   if (isDrawing === true) {
-    drawPattern(x, y, e.clientX, e.clientY);
+    drawPattern(context, x, y, e.clientX, e.clientY);
     x = 0;
     y = 0;
     isDrawing = false;
@@ -148,6 +197,11 @@ let ongoingTouches = [];
 canvas.addEventListener(
   'touchstart',
   e => {
+    if (messageVisible) {
+      messageVisible = false;
+      startingMessage.id = 'starting-message-hidden';
+    }
+
     e.preventDefault();
     let touches = e.changedTouches;
     for (let i = 0; i < touches.length; i++) {
@@ -173,7 +227,7 @@ canvas.addEventListener(
         let x2 = touches[i].pageX;
         let y2 = touches[i].pageY;
 
-        drawPattern(x1, y1, x2, y2);
+        drawPattern(context, x1, y1, x2, y2);
 
         ongoingTouches.splice(idx, 1, copyTouch(touches[i]));
       }
@@ -194,7 +248,7 @@ window.addEventListener('touchend', e => {
       let x2 = touches[i].pageX;
       let y2 = touches[i].pageY;
 
-      drawPattern(x1, y1, x2, y2);
+      drawPattern(context, x1, y1, x2, y2);
 
       ongoingTouches.splice(idx, 1);
     }
