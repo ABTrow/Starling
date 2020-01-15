@@ -1,5 +1,5 @@
-let viewportWidth = window.outerWidth;
-let viewportHeight = window.outerHeight;
+let viewportWidth = Math.min(window.outerWidth, window.innerWidth);
+let viewportHeight = Math.min(window.outerHeight, window.innerHeight);
 
 const patterns = {
   one: function patternOne(context, x1, y1, x2, y2) {
@@ -138,8 +138,8 @@ window.addEventListener('shake', toggleMenu, false);
 let canvas = document.createElement('canvas');
 let frame = document.querySelector('#frame');
 
-canvas.width = window.outerWidth;
-canvas.height = window.outerHeight;
+canvas.width = viewportWidth;
+canvas.height = viewportHeight;
 
 frame.appendChild(canvas);
 
@@ -164,6 +164,9 @@ context.fillStyle = gradient;
 context.fillRect(0, 0, viewportWidth, viewportHeight);
 
 window.onresize = () => {
+  let newWidth = Math.min(window.outerWidth, window.innerWidth);
+  let newHeight = Math.min(window.outerHeight, window.innerHeight);
+
   // create a temporary canvas to store current art
   const tempCanvas = document.createElement('canvas');
   const tempContext = tempCanvas.getContext('2d');
@@ -172,16 +175,16 @@ window.onresize = () => {
   tempContext.drawImage(canvas, 0, 0);
 
   // calculate scale change
-  let xScale = window.outerWidth / viewportWidth;
-  let yScale = window.outerHeight / viewportHeight;
+  let xScale = newWidth / viewportWidth;
+  let yScale = newHeight / viewportHeight;
 
   // update stored viewport size to new size
-  viewportWidth = window.outerWidth;
-  viewportHeight = window.outerHeight;
+  viewportWidth = newWidth;
+  viewportHeight = newHeight;
 
   // resize canvas and rect
-  canvas.width = window.outerWidth;
-  canvas.height = window.outerHeight;
+  canvas.width = newWidth;
+  canvas.height = newHeight;
   rect = canvas.getBoundingClientRect();
 
   // copy old art to new scale, return context to default scale
