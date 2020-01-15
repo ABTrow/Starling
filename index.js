@@ -1,5 +1,5 @@
-let viewportWidth = window.innerWidth;
-let viewportHeight = window.innerHeight;
+let viewportWidth = window.outerWidth;
+let viewportHeight = window.outerHeight;
 
 const patterns = {
   one: function patternOne(context, x1, y1, x2, y2) {
@@ -138,8 +138,8 @@ window.addEventListener('shake', toggleMenu, false);
 let canvas = document.createElement('canvas');
 let frame = document.querySelector('#frame');
 
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+canvas.width = window.outerWidth;
+canvas.height = window.outerHeight;
 
 frame.appendChild(canvas);
 
@@ -164,33 +164,32 @@ context.fillStyle = gradient;
 context.fillRect(0, 0, viewportWidth, viewportHeight);
 
 window.onresize = () => {
+  // create a temporary canvas to store current art
   const tempCanvas = document.createElement('canvas');
   const tempContext = tempCanvas.getContext('2d');
-
   tempCanvas.width = viewportWidth;
   tempCanvas.height = viewportHeight;
-
   tempContext.drawImage(canvas, 0, 0);
 
-  console.log('viewportWidth:', viewportWidth);
-  console.log('window.innerWidth: ', window.innerWidth);
+  // calculate scale change
+  let xScale = window.outerWidth / viewportWidth;
+  let yScale = window.outerHeight / viewportHeight;
 
-  let xScale = window.innerWidth / viewportWidth;
-  let yScale = window.innerHeight / viewportHeight;
+  // update stored viewport size to new size
+  viewportWidth = window.outerWidth;
+  viewportHeight = window.outerHeight;
 
-  viewportWidth = window.innerWidth;
-  viewportHeight = window.innerHeight;
+  // resize canvas and rect
+  canvas.width = window.outerWidth;
+  canvas.height = window.outerHeight;
+  rect = canvas.getBoundingClientRect();
 
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-
-  console.log(xScale, yScale);
-
+  // copy old art to new scale, return context to default scale
+  context.save();
   context.scale(xScale, yScale);
   context.drawImage(tempCanvas, 0, 0);
+  context.restore();
   context.lineJoin = context.lineCap = 'round';
-
-  rect = canvas.getBoundingClientRect();
 };
 
 let rect = canvas.getBoundingClientRect();
