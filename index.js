@@ -1,5 +1,6 @@
 let viewportWidth = Math.min(window.outerWidth, window.innerWidth);
 let viewportHeight = Math.min(window.outerHeight, window.innerHeight);
+let viewportOrientation = window.screen.orientation.type;
 
 const patterns = {
   one: function patternOne(context, x1, y1, x2, y2) {
@@ -164,15 +165,16 @@ context.fillStyle = gradient;
 context.fillRect(0, 0, viewportWidth, viewportHeight);
 
 window.onresize = () => {
-  let newWidth = Math.min(window.outerWidth, window.innerWidth);
-  let newHeight = Math.min(window.outerHeight, window.innerHeight);
-
   // create a temporary canvas to store current art
   const tempCanvas = document.createElement('canvas');
   const tempContext = tempCanvas.getContext('2d');
   tempCanvas.width = viewportWidth;
   tempCanvas.height = viewportHeight;
   tempContext.drawImage(canvas, 0, 0);
+
+  // Math.min to ensure proper functionality on mobile and desktop
+  let newWidth = Math.min(window.outerWidth, window.innerWidth);
+  let newHeight = Math.min(window.outerHeight, window.innerHeight);
 
   // calculate scale change
   let xScale = newWidth / viewportWidth;
@@ -187,12 +189,23 @@ window.onresize = () => {
   canvas.height = newHeight;
   rect = canvas.getBoundingClientRect();
 
-  // copy old art to new scale, return context to default scale
-  context.save();
-  context.scale(xScale, yScale);
-  context.drawImage(tempCanvas, 0, 0);
-  context.restore();
-  context.lineJoin = context.lineCap = 'round';
+  if (viewportOrientation !== window.screen.orientation.type) {
+    // rotate image incase of mobile screen orientation change
+    viewportOrientation = window.screen.orientation.type;
+    context.save();
+    context.rotate((90 * Math.PI) / 180);
+    context.translate(0, -viewportWidth);
+    context.drawImage(tempCanvas, 0, 0);
+    context.restore();
+    context.lineJoin = context.lineCap = 'round';
+  } else {
+    // rescale art for desktop window size change.
+    context.save();
+    context.scale(xScale, yScale);
+    context.drawImage(tempCanvas, 0, 0);
+    context.restore();
+    context.lineJoin = context.lineCap = 'round';
+  }
 };
 
 let rect = canvas.getBoundingClientRect();
