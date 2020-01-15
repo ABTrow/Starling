@@ -1,4 +1,5 @@
-window.screen.orientation.lock('any').catch(console.error);
+let viewportWidth = window.innerWidth;
+let viewportHeight = window.innerHeight;
 
 const patterns = {
   one: function patternOne(context, x1, y1, x2, y2) {
@@ -149,8 +150,8 @@ context.lineJoin = context.lineCap = 'round';
 let gradient = context.createLinearGradient(
   0,
   0,
-  window.innerWidth,
-  window.innerHeight
+  viewportWidth,
+  viewportHeight
 );
 
 // Add three color stops
@@ -160,9 +161,39 @@ gradient.addColorStop(1, '#BFD4FF');
 
 // Set the fill style and draw a rectangle
 context.fillStyle = gradient;
-context.fillRect(0, 0, window.innerWidth, window.innerHeight);
+context.fillRect(0, 0, viewportWidth, viewportHeight);
 
-const rect = canvas.getBoundingClientRect();
+window.onresize = () => {
+  const tempCanvas = document.createElement('canvas');
+  const tempContext = tempCanvas.getContext('2d');
+
+  tempCanvas.width = viewportWidth;
+  tempCanvas.height = viewportHeight;
+
+  tempContext.drawImage(canvas, 0, 0);
+
+  console.log('viewportWidth:', viewportWidth);
+  console.log('window.innerWidth: ', window.innerWidth);
+
+  let xScale = window.innerWidth / viewportWidth;
+  let yScale = window.innerHeight / viewportHeight;
+
+  viewportWidth = window.innerWidth;
+  viewportHeight = window.innerHeight;
+
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  console.log(xScale, yScale);
+
+  context.scale(xScale, yScale);
+  context.drawImage(tempCanvas, 0, 0);
+  context.lineJoin = context.lineCap = 'round';
+
+  rect = canvas.getBoundingClientRect();
+};
+
+let rect = canvas.getBoundingClientRect();
 
 let isDrawing = false;
 let x = 0;
