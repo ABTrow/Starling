@@ -176,29 +176,28 @@ window.onresize = () => {
   let newWidth = Math.min(window.outerWidth, window.innerWidth);
   let newHeight = Math.min(window.outerHeight, window.innerHeight);
 
-  // calculate scale change
-  let xScale = newWidth / viewportWidth;
-  let yScale = newHeight / viewportHeight;
-
-  // update stored viewport size to new size
-  viewportWidth = newWidth;
-  viewportHeight = newHeight;
-
   // resize canvas and rect
   canvas.width = newWidth;
   canvas.height = newHeight;
   rect = canvas.getBoundingClientRect();
 
   if (viewportOrientation !== window.screen.orientation.type) {
+    // calulate scale change for rotation
+    let xScale2 = newHeight / viewportWidth;
+    let yScale2 = newWidth / viewportHeight;
     // rotate image incase of mobile screen orientation change
     viewportOrientation = window.screen.orientation.type;
     context.save();
     context.rotate((90 * Math.PI) / 180);
-    context.translate(0, -viewportWidth);
+    context.translate(0, -newWidth);
+    context.scale(xScale2, yScale2);
     context.drawImage(tempCanvas, 0, 0);
     context.restore();
     context.lineJoin = context.lineCap = 'round';
   } else {
+    // calculate scale change
+    let xScale = newWidth / viewportWidth;
+    let yScale = newHeight / viewportHeight;
     // rescale art for desktop window size change.
     context.save();
     context.scale(xScale, yScale);
@@ -206,6 +205,9 @@ window.onresize = () => {
     context.restore();
     context.lineJoin = context.lineCap = 'round';
   }
+  // update stored viewport size to new size
+  viewportWidth = newWidth;
+  viewportHeight = newHeight;
 };
 
 let rect = canvas.getBoundingClientRect();
