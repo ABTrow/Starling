@@ -90,19 +90,17 @@ buttons.forEach(button => {
     } else if (target.dataset.pattern) {
       drawPattern = patterns[target.dataset.pattern];
     } else {
-      console.log('requested fullscreen');
       canvas.requestFullscreen();
       screen.orientation.lock('portrait-primary');
     }
   });
-  button.addEventListener('touchstart', e => {
+  button.addEventListener('touchend', e => {
     let target = e.changedTouches[0].target;
     if (target.dataset.palette) {
       colorPalette = palettes[target.dataset.palette];
     } else if (target.dataset.pattern) {
       drawPattern = patterns[target.dataset.pattern];
     } else {
-      console.log('requested fullscreen');
       canvas.requestFullscreen();
       screen.orientation.lock('portrait-primary');
     }
@@ -113,7 +111,6 @@ function toggleMenu() {
   if (!inFullscreen) {
     canvas.requestFullscreen();
   } else {
-    console.log('fire torpedos!');
     document.exitFullscreen();
   }
   inFullscreen = !inFullscreen;
