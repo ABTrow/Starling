@@ -4,6 +4,9 @@ let viewportOrientation = window.screen.orientation
   ? window.screen.orientation.type
   : window.orientation;
 let inFullscreen = false;
+const longTouchDuration = 1000;
+let touchTimer;
+let menuIsVisibile = true;
 
 const patterns = {
   one: function patternOne(context, x1, y1, x2, y2) {
@@ -108,37 +111,43 @@ buttons.forEach(button => {
 });
 
 function toggleMenu() {
-  if (inFullscreen) {
-    if (document.cancelFullScreen) {
-      document.cancelFullScreen();
-    } else {
-      if (document.mozCancelFullScreen) {
-        document.mozCancelFullScreen();
-      } else {
-        if (document.webkitCancelFullScreen) {
-          document.webkitCancelFullScreen();
-        } else {
-          menu.id = 'menu';
-        }
-      }
-    }
-  } else {
-    if (canvas.requestFullscreen) {
-      canvas.requestFullscreen();
-    } else {
-      if (canvas.mozRequestFullScreen) {
-        canvas.mozRequestFullScreen();
-      } else {
-        if (canvas.webkitRequestFullscreen) {
-          canvas.webkitRequestFullscreen();
-        } else {
-          menu.id = 'menu-hidden';
-        }
-      }
-    }
-  }
-  inFullscreen = !inFullscreen;
+  if (menuIsVisibile) menu.id = 'menu-hidden';
+  else menu.id = 'menu';
+  menuIsVisibile = !menuIsVisibile;
 }
+
+// function toggleMenu() {
+//   if (inFullscreen) {
+//     if (document.cancelFullScreen) {
+//       document.cancelFullScreen();
+//     } else {
+//       if (document.mozCancelFullScreen) {
+//         document.mozCancelFullScreen();
+//       } else {
+//         if (document.webkitCancelFullScreen) {
+//           document.webkitCancelFullScreen();
+//         } else {
+//           menu.id = 'menu';
+//         }
+//       }
+//     }
+//   } else {
+//     if (canvas.requestFullscreen) {
+//       canvas.requestFullscreen();
+//     } else {
+//       if (canvas.mozRequestFullScreen) {
+//         canvas.mozRequestFullScreen();
+//       } else {
+//         if (canvas.webkitRequestFullscreen) {
+//           canvas.webkitRequestFullscreen();
+//         } else {
+//           menu.id = 'menu-hidden';
+//         }
+//       }
+//     }
+//   }
+//   inFullscreen = !inFullscreen;
+// }
 
 document.addEventListener('keydown', e => changeSettings(e));
 
@@ -162,13 +171,6 @@ function changeSettings(e) {
       break;
   }
 }
-
-let shakeEvent = new Shake({
-  threshold: 5, // optional shake strength threshold
-  timeout: 1000, // optional, determines the frequency of event generation
-});
-shakeEvent.start();
-window.addEventListener('shake', toggleMenu, false);
 
 let canvas = document.createElement('canvas');
 let frame = document.querySelector('#frame');
@@ -288,12 +290,14 @@ let ongoingTouches = [];
 canvas.addEventListener(
   'touchstart',
   e => {
+    e.preventDefault();
+    timer = setTimeout(toggleMenu, longTouchDuration);
+
     if (messageVisible) {
       messageVisible = false;
       startingMessage.id = 'starting-message-hidden';
     }
 
-    e.preventDefault();
     let touches = e.changedTouches;
     for (let i = 0; i < touches.length; i++) {
       ongoingTouches.push(copyTouch(touches[i]));
@@ -306,6 +310,7 @@ canvas.addEventListener(
   'touchmove',
   e => {
     e.preventDefault();
+    if (timer) clearTimeout(timer);
     let touches = e.changedTouches;
 
     for (let i = 0; i < touches.length; i++) {
@@ -329,17 +334,18 @@ canvas.addEventListener(
 
 window.addEventListener('touchend', e => {
   event.preventDefault();
+  if (timer) clearTimeout(timer);
   let touches = e.changedTouches;
   for (let i = 0; i < touches.length; i++) {
     let idx = ongoingTouchIndexById(touches[i].identifier);
     if (idx >= 0) {
-      let x1 = ongoingTouches[idx].pageX;
-      let y1 = ongoingTouches[idx].pageY;
+      // let x1 = ongoingTouches[idx].pageX;
+      // let y1 = ongoingTouches[idx].pageY;
 
-      let x2 = touches[i].pageX;
-      let y2 = touches[i].pageY;
+      // let x2 = touches[i].pageX;
+      // let y2 = touches[i].pageY;
 
-      drawPattern(context, x1, y1, x2, y2);
+      // // drawPattern(context, x1, y1, x2, y2);
 
       ongoingTouches.splice(idx, 1);
     }
