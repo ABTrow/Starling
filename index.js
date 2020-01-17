@@ -1,6 +1,8 @@
 let viewportWidth = Math.min(window.outerWidth, window.innerWidth);
 let viewportHeight = Math.min(window.outerHeight, window.innerHeight);
-let viewportOrientation = window.screen.orientation.type;
+let viewportOrientation = window.screen.orientation
+  ? window.screen.orientation.type
+  : window.orientation;
 let inFullscreen = false;
 
 const patterns = {
@@ -101,25 +103,50 @@ buttons.forEach(button => {
     } else if (target.dataset.pattern) {
       drawPattern = patterns[target.dataset.pattern];
     } else {
-      canvas.requestFullscreen();
-      screen.orientation.lock('portrait-primary');
+      toggleMenu();
     }
   });
 });
 
 function toggleMenu() {
-  if (!inFullscreen) {
-    canvas.requestFullscreen();
+  if (
+    document.fullscreenElement ||
+    document.mozFullScreenElement ||
+    document.webkitFullscreenElement
+  ) {
+    if (document.cancelFullScreen) {
+      document.cancelFullScreen();
+    } else {
+      if (document.mozCancelFullScreen) {
+        document.mozCancelFullScreen();
+      } else {
+        if (document.webkitCancelFullScreen) {
+          document.webkitCancelFullScreen();
+        }
+      }
+    }
   } else {
-    document.exitFullscreen();
+    if (canvas.requestFullscreen) {
+      canvas.requestFullscreen();
+    } else {
+      if (canvas.mozRequestFullScreen) {
+        canvas.mozRequestFullScreen();
+      } else {
+        if (canvas.webkitRequestFullscreen) {
+          canvas.webkitRequestFullscreen();
+        } else {
+          console.log('here?');
+        }
+      }
+    }
   }
-  inFullscreen = !inFullscreen;
 }
 
-document.addEventListener('keydown', () => changeSettings(event));
+document.addEventListener('keydown', e => changeSettings(e));
 
-function changeSettings() {
-  switch (event.code) {
+function changeSettings(e) {
+  e.preventDefault;
+  switch (e.code) {
     case 'Digit1':
       colorPalette = palettes.beach;
       break;
@@ -190,12 +217,16 @@ window.onresize = () => {
   canvas.height = newHeight;
   rect = canvas.getBoundingClientRect();
 
-  if (viewportOrientation !== window.screen.orientation.type) {
+  let newOrientation = window.screen.orientation
+    ? window.screen.orientation.type
+    : window.orientation;
+
+  if (viewportOrientation !== newOrientation) {
     // calulate scale change for rotation
     let xScale2 = newHeight / viewportWidth;
     let yScale2 = newWidth / viewportHeight;
     // rotate image incase of mobile screen orientation change
-    viewportOrientation = window.screen.orientation.type;
+    viewportOrientation = newOrientation;
     context.save();
     context.rotate((90 * Math.PI) / 180);
     context.translate(0, -newWidth);
