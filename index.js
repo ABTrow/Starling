@@ -109,11 +109,7 @@ buttons.forEach(button => {
 });
 
 function toggleMenu() {
-  if (
-    document.fullscreenElement ||
-    document.mozFullScreenElement ||
-    document.webkitFullscreenElement
-  ) {
+  if (inFullscreen) {
     if (document.cancelFullScreen) {
       document.cancelFullScreen();
     } else {
@@ -122,6 +118,8 @@ function toggleMenu() {
       } else {
         if (document.webkitCancelFullScreen) {
           document.webkitCancelFullScreen();
+        } else {
+          menu.id = 'menu';
         }
       }
     }
@@ -135,11 +133,12 @@ function toggleMenu() {
         if (canvas.webkitRequestFullscreen) {
           canvas.webkitRequestFullscreen();
         } else {
-          console.log('here?');
+          menu.id = 'menu-hidden';
         }
       }
     }
   }
+  inFullscreen = !inFullscreen;
 }
 
 document.addEventListener('keydown', e => changeSettings(e));
