@@ -92,8 +92,7 @@ buttons.forEach(button => {
     } else if (target.dataset.pattern) {
       drawPattern = patterns[target.dataset.pattern];
     } else {
-      canvas.requestFullscreen();
-      screen.orientation.lock('portrait-primary');
+      toggleMenu();
     }
   });
   button.addEventListener('touchend', e => {
