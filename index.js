@@ -310,7 +310,6 @@ canvas.addEventListener(
   'touchmove',
   e => {
     e.preventDefault();
-    if (timer) clearTimeout(timer);
     let touches = e.changedTouches;
 
     for (let i = 0; i < touches.length; i++) {
