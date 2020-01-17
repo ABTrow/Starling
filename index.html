@@ -6,9 +6,38 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Starling</title>
     <link rel="stylesheet" href="styles.css" />
+    <script defer src="shake.js"></script>
     <script defer src="index.js"></script>
   </head>
   <body>
+    <div id="menu">
+      <div class="menu-section" id="colors">
+        <p class="menu-header">colors</p>
+        <div class="button-box">
+          <button data-palette="beach">1</button>
+          <button data-palette="forest">2</button>
+        </div>
+      </div>
+      <div class="menu-section" id="patterns">
+        <p class="menu-header">patterns</p>
+        <div class="button-box">
+          <button data-pattern="one">1</button>
+          <button data-pattern="two">2</button>
+        </div>
+      </div>
+      <div class="menu-section" id="settings">
+        <p class="menu-header">settings</p>
+        <div class="button-box">
+          <button id="fullscreen">Fullscreen</button>
+        </div>
+      </div>
+    </div>
     <div id="frame"></div>
+    <p id="starting-message">
+      Touch anywhere to begin drawing.
+      <br />
+      <br />
+      Press Space or Shake Your Phone to show/hide menu.
+    </p>
   </body>
 </html>
