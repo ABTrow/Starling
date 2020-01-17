@@ -1,6 +1,7 @@
 let viewportWidth = Math.min(window.outerWidth, window.innerWidth);
 let viewportHeight = Math.min(window.outerHeight, window.innerHeight);
 let viewportOrientation = window.screen.orientation.type;
+let inFullscreen = false;
 
 const patterns = {
   one: function patternOne(context, x1, y1, x2, y2) {
@@ -76,14 +77,7 @@ let colorPalette = palettes.beach;
 const startingMessage = document.querySelector('#starting-message');
 let messageVisible = true;
 
-const menu = document.querySelector('#menu-hidden');
-let menuVisible = false;
-
-function toggleMenu() {
-  menuVisible = !menuVisible;
-  if (menu.id === 'menu-hidden') menu.id = 'menu';
-  else menu.id = 'menu-hidden';
-}
+const menu = document.querySelector('#menu');
 
 const buttons = menu.querySelectorAll('button');
 
@@ -95,6 +89,10 @@ buttons.forEach(button => {
       colorPalette = palettes[target.dataset.palette];
     } else if (target.dataset.pattern) {
       drawPattern = patterns[target.dataset.pattern];
+    } else {
+      console.log('requested fullscreen');
+      canvas.requestFullscreen();
+      screen.orientation.lock('portrait-primary');
     }
   });
   button.addEventListener('touchstart', e => {
@@ -103,9 +101,23 @@ buttons.forEach(button => {
       colorPalette = palettes[target.dataset.palette];
     } else if (target.dataset.pattern) {
       drawPattern = patterns[target.dataset.pattern];
+    } else {
+      console.log('requested fullscreen');
+      canvas.requestFullscreen();
+      screen.orientation.lock('portrait-primary');
     }
   });
 });
+
+function toggleMenu() {
+  if (!inFullscreen) {
+    canvas.requestFullscreen();
+  } else {
+    console.log('fire torpedos!');
+    document.exitFullscreen();
+  }
+  inFullscreen = !inFullscreen;
+}
 
 document.addEventListener('keydown', () => changeSettings(event));
 
