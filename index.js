@@ -9,7 +9,7 @@ let touchTimer;
 let menuIsVisibile = true;
 
 const patterns = {
-  one: function patternOne(context, x1, y1, x2, y2) {
+  one: (context, x1, y1, x2, y2) => {
     drawLine(context, x1, y1, x2 - rect.left, y2 - rect.top);
 
     drawLine(
@@ -25,7 +25,7 @@ const patterns = {
     drawLine(context, rect.right - x1, y1, rect.right - x2, y2 - rect.top);
   },
 
-  two: function patternTwo(context, x1, y1, x2, y2) {
+  two: (context, x1, y1, x2, y2) => {
     drawLine(context, x1, y1, x2 - rect.left, y2 - rect.top);
 
     drawLine(
@@ -68,9 +68,23 @@ const patterns = {
       rect.bottom - y2
     );
   },
+  three: (context, x1, y1, x2, y2) => {
+    context.save();
+    let rotationCount = 0;
+
+    while (rotationCount < 6) {
+      drawLine(context, x1, y1, x2 - rect.left, y2 - rect.top);
+      context.translate(rect.right / 2, rect.bottom / 2);
+      context.rotate((60 * Math.PI) / 180);
+      context.translate(-rect.right / 2, -rect.bottom / 2);
+      rotationCount++;
+    }
+
+    context.restore();
+  },
 };
 
-let drawPattern = patterns.one;
+let drawPattern = patterns.three;
 
 const palettes = {
   beach: ['#EAEFF9', '#6C8D9B', '#D3CEAD', '#E6E1C5'],
@@ -160,11 +174,14 @@ function changeSettings(e) {
     case 'Digit2':
       colorPalette = palettes.forest;
       break;
-    case 'Digit9':
+    case 'Digit8':
       drawPattern = patterns.one;
       break;
-    case 'Digit0':
+    case 'Digit9':
       drawPattern = patterns.two;
+      break;
+    case 'Digit0':
+      drawPattern = patterns.three;
       break;
     case 'Space':
       toggleMenu();
