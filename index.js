@@ -84,7 +84,7 @@ const patterns = {
   },
 };
 
-let drawPattern = patterns.three;
+let drawPattern = patterns.one;
 
 const palettes = {
   beach: ['#EAEFF9', '#6C8D9B', '#D3CEAD', '#E6E1C5'],
