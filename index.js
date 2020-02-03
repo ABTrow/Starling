@@ -130,39 +130,6 @@ function toggleMenu() {
   menuIsVisibile = !menuIsVisibile;
 }
 
-// function toggleMenu() {
-//   if (inFullscreen) {
-//     if (document.cancelFullScreen) {
-//       document.cancelFullScreen();
-//     } else {
-//       if (document.mozCancelFullScreen) {
-//         document.mozCancelFullScreen();
-//       } else {
-//         if (document.webkitCancelFullScreen) {
-//           document.webkitCancelFullScreen();
-//         } else {
-//           menu.id = 'menu';
-//         }
-//       }
-//     }
-//   } else {
-//     if (canvas.requestFullscreen) {
-//       canvas.requestFullscreen();
-//     } else {
-//       if (canvas.mozRequestFullScreen) {
-//         canvas.mozRequestFullScreen();
-//       } else {
-//         if (canvas.webkitRequestFullscreen) {
-//           canvas.webkitRequestFullscreen();
-//         } else {
-//           menu.id = 'menu-hidden';
-//         }
-//       }
-//     }
-//   }
-//   inFullscreen = !inFullscreen;
-// }
-
 document.addEventListener('keydown', e => changeSettings(e));
 
 function changeSettings(e) {
@@ -355,14 +322,6 @@ window.addEventListener('touchend', e => {
   for (let i = 0; i < touches.length; i++) {
     let idx = ongoingTouchIndexById(touches[i].identifier);
     if (idx >= 0) {
-      // let x1 = ongoingTouches[idx].pageX;
-      // let y1 = ongoingTouches[idx].pageY;
-
-      // let x2 = touches[i].pageX;
-      // let y2 = touches[i].pageY;
-
-      // // drawPattern(context, x1, y1, x2, y2);
-
       ongoingTouches.splice(idx, 1);
     }
   }
