@@ -3,101 +3,18 @@ let viewportHeight = Math.min(window.outerHeight, window.innerHeight);
 let viewportOrientation = window.screen.orientation
   ? window.screen.orientation.type
   : window.orientation;
-let inFullscreen = false;
 const longTouchDuration = 1000;
 let touchTimer;
 let menuIsVisibile = true;
-
-const patterns = {
-  one: (context, x1, y1, x2, y2) => {
-    drawLine(context, x1, y1, x2 - rect.left, y2 - rect.top);
-
-    drawLine(
-      context,
-      rect.right - x1,
-      rect.bottom - y1,
-      rect.right - x2,
-      rect.bottom - y2
-    );
-
-    drawLine(context, x1, rect.bottom - y1, x2 - rect.left, rect.bottom - y2);
-
-    drawLine(context, rect.right - x1, y1, rect.right - x2, y2 - rect.top);
-  },
-
-  two: (context, x1, y1, x2, y2) => {
-    drawLine(context, x1, y1, x2 - rect.left, y2 - rect.top);
-
-    drawLine(
-      context,
-      x1 + rect.right / 2,
-      y1,
-      x2 + rect.right / 2,
-      y2 - rect.top
-    );
-
-    drawLine(
-      context,
-      x1 - rect.right / 2,
-      y1,
-      x2 - rect.right / 2,
-      y2 - rect.top
-    );
-
-    drawLine(
-      context,
-      rect.right / 2 - x1,
-      rect.bottom - y1,
-      rect.right / 2 - x2,
-      rect.bottom - y2
-    );
-
-    drawLine(
-      context,
-      rect.right - x1,
-      rect.bottom - y1,
-      rect.right - x2,
-      rect.bottom - y2
-    );
-
-    drawLine(
-      context,
-      1.5 * rect.right - x1,
-      rect.bottom - y1,
-      1.5 * rect.right - x2,
-      rect.bottom - y2
-    );
-  },
-  three: (context, x1, y1, x2, y2) => {
-    context.save();
-    let rotationCount = 0;
-
-    while (rotationCount < 6) {
-      drawLine(context, x1, y1, x2 - rect.left, y2 - rect.top);
-      context.translate(rect.right / 2, rect.bottom / 2);
-      context.rotate((60 * Math.PI) / 180);
-      context.translate(-rect.right / 2, -rect.bottom / 2);
-      rotationCount++;
-    }
-
-    context.restore();
-  },
-};
+let color;
 
 let drawPattern = patterns.one;
-
-const palettes = {
-  beach: ['#EAEFF9', '#6C8D9B', '#D3CEAD', '#E6E1C5'],
-  forest: ['#B9FFAD', '#3F633D', '#514E3C', '#513535', '#7A0000'],
-};
-
 let colorPalette = palettes.beach;
 
 const startingMessage = document.querySelector('#starting-message');
 let messageVisible = true;
 
 const menu = document.querySelector('#menu');
-
 const buttons = menu.querySelectorAll('button');
 
 buttons.forEach(button => {
@@ -112,6 +29,7 @@ buttons.forEach(button => {
       toggleMenu();
     }
   });
+
   button.addEventListener('touchend', e => {
     let target = e.changedTouches[0].target;
     if (target.dataset.palette) {
@@ -245,6 +163,7 @@ canvas.addEventListener('mousedown', e => {
     messageVisible = false;
     startingMessage.id = 'starting-message-hidden';
   }
+  color = colorPalette[Math.floor(Math.random() * colorPalette.length)];
   x = e.clientX - rect.left;
   y = e.clientY - rect.top;
   isDrawing = true;
@@ -275,7 +194,9 @@ canvas.addEventListener(
   'touchstart',
   e => {
     e.preventDefault();
-    timer = setTimeout(toggleMenu, longTouchDuration);
+    touchTimer = setTimeout(toggleMenu, longTouchDuration);
+
+    color = colorPalette[Math.floor(Math.random() * colorPalette.length)];
 
     if (messageVisible) {
       messageVisible = false;
@@ -317,7 +238,7 @@ canvas.addEventListener(
 
 window.addEventListener('touchend', e => {
   event.preventDefault();
-  if (timer) clearTimeout(timer);
+  if (touchTimer) clearTimeout(touchTimer);
   let touches = e.changedTouches;
   for (let i = 0; i < touches.length; i++) {
     let idx = ongoingTouchIndexById(touches[i].identifier);
@@ -343,8 +264,6 @@ function ongoingTouchIndexById(idToFind) {
 }
 
 function drawLine(context, x1, y1, x2, y2) {
-  let color = colorPalette[Math.floor(Math.random() * colorPalette.length)];
-
   context.beginPath();
   context.strokeStyle = color;
   context.lineWidth = 15;
