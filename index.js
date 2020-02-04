@@ -6,10 +6,11 @@ let viewportOrientation = window.screen.orientation
 const longTouchDuration = 1000;
 let touchTimer;
 let menuIsVisibile = true;
-let color;
+let color = palettes.beach[0];
 
 let drawPattern = patterns.one;
 let colorPalette = palettes.beach;
+let colorMode = 'random-lines';
 
 const startingMessage = document.querySelector('#starting-message');
 let messageVisible = true;
@@ -42,37 +43,7 @@ buttons.forEach(button => {
   });
 });
 
-function toggleMenu() {
-  if (menuIsVisibile) menu.id = 'menu-hidden';
-  else menu.id = 'menu';
-  menuIsVisibile = !menuIsVisibile;
-}
-
 document.addEventListener('keydown', e => changeSettings(e));
-
-function changeSettings(e) {
-  e.preventDefault;
-  switch (e.code) {
-    case 'Digit1':
-      colorPalette = palettes.beach;
-      break;
-    case 'Digit2':
-      colorPalette = palettes.forest;
-      break;
-    case 'Digit8':
-      drawPattern = patterns.one;
-      break;
-    case 'Digit9':
-      drawPattern = patterns.two;
-      break;
-    case 'Digit0':
-      drawPattern = patterns.three;
-      break;
-    case 'Space':
-      toggleMenu();
-      break;
-  }
-}
 
 let canvas = document.createElement('canvas');
 let frame = document.querySelector('#frame');
@@ -102,55 +73,7 @@ gradient.addColorStop(1, '#BFD4FF');
 context.fillStyle = gradient;
 context.fillRect(0, 0, viewportWidth, viewportHeight);
 
-window.onresize = () => {
-  // create a temporary canvas to store current art
-  const tempCanvas = document.createElement('canvas');
-  const tempContext = tempCanvas.getContext('2d');
-  tempCanvas.width = viewportWidth;
-  tempCanvas.height = viewportHeight;
-  tempContext.drawImage(canvas, 0, 0);
-
-  // Math.min to ensure proper functionality on mobile and desktop
-  let newWidth = Math.min(window.outerWidth, window.innerWidth);
-  let newHeight = Math.min(window.outerHeight, window.innerHeight);
-
-  // resize canvas and rect
-  canvas.width = newWidth;
-  canvas.height = newHeight;
-  rect = canvas.getBoundingClientRect();
-
-  let newOrientation = window.screen.orientation
-    ? window.screen.orientation.type
-    : window.orientation;
-
-  if (viewportOrientation !== newOrientation) {
-    // calulate scale change for rotation
-    let xScale2 = newHeight / viewportWidth;
-    let yScale2 = newWidth / viewportHeight;
-    // rotate image incase of mobile screen orientation change
-    viewportOrientation = newOrientation;
-    context.save();
-    context.rotate((90 * Math.PI) / 180);
-    context.translate(0, -newWidth);
-    context.scale(xScale2, yScale2);
-    context.drawImage(tempCanvas, 0, 0);
-    context.restore();
-    context.lineJoin = context.lineCap = 'round';
-  } else {
-    // calculate scale change
-    let xScale = newWidth / viewportWidth;
-    let yScale = newHeight / viewportHeight;
-    // rescale art for desktop window size change.
-    context.save();
-    context.scale(xScale, yScale);
-    context.drawImage(tempCanvas, 0, 0);
-    context.restore();
-    context.lineJoin = context.lineCap = 'round';
-  }
-  // update stored viewport size to new size
-  viewportWidth = newWidth;
-  viewportHeight = newHeight;
-};
+window.onresize = adjustWindow;
 
 let rect = canvas.getBoundingClientRect();
 
@@ -163,7 +86,9 @@ canvas.addEventListener('mousedown', e => {
     messageVisible = false;
     startingMessage.id = 'starting-message-hidden';
   }
-  color = colorPalette[Math.floor(Math.random() * colorPalette.length)];
+  if (colorMode === 'random-lines') {
+    color = generateRandomColor();
+  }
   x = e.clientX - rect.left;
   y = e.clientY - rect.top;
   isDrawing = true;
@@ -172,7 +97,6 @@ canvas.addEventListener('mousedown', e => {
 canvas.addEventListener('mousemove', e => {
   if (isDrawing === true) {
     drawPattern(context, x, y, e.clientX, e.clientY);
-
     x = e.clientX;
     y = e.clientY;
   }
@@ -194,9 +118,14 @@ canvas.addEventListener(
   'touchstart',
   e => {
     e.preventDefault();
-    touchTimer = setTimeout(toggleMenu, longTouchDuration);
 
-    color = colorPalette[Math.floor(Math.random() * colorPalette.length)];
+    if (e.changedTouches[0].pageY < 50) {
+      touchTimer = setTimeout(toggleMenu, longTouchDuration);
+    }
+
+    if (colorMode === 'random-lines') {
+      color = generateRandomColor();
+    }
 
     if (messageVisible) {
       messageVisible = false;
@@ -219,6 +148,8 @@ canvas.addEventListener(
 
     for (let i = 0; i < touches.length; i++) {
       let idx = ongoingTouchIndexById(touches[i].identifier);
+
+      if (touchTimer && touches[i].pageY > 50) clearTimeout(touchTimer);
 
       if (idx >= 0) {
         let x1 = ongoingTouches[idx].pageX;
@@ -247,28 +178,3 @@ window.addEventListener('touchend', e => {
     }
   }
 });
-
-function copyTouch({ identifier, pageX, pageY }) {
-  return { identifier, pageX, pageY };
-}
-
-function ongoingTouchIndexById(idToFind) {
-  for (let i = 0; i < ongoingTouches.length; i++) {
-    let id = ongoingTouches[i].identifier;
-
-    if (id == idToFind) {
-      return i;
-    }
-  }
-  return -1; // not found
-}
-
-function drawLine(context, x1, y1, x2, y2) {
-  context.beginPath();
-  context.strokeStyle = color;
-  context.lineWidth = 15;
-  context.moveTo(x1, y1);
-  context.lineTo(x2, y2);
-  context.stroke();
-  context.closePath();
-}
