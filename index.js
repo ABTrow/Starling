@@ -5,43 +5,39 @@ let viewportOrientation = window.screen.orientation
   : window.orientation;
 const longTouchDuration = 1000;
 let touchTimer;
-let menuIsVisibile = true;
-let color = palettes.beach[0];
 
-let drawPattern = patterns.one;
-let colorPalette = palettes.beach;
-let colorMode = 'random-lines';
+let color, colorPalette, colorMode, drawPattern;
 
 const startingMessage = document.querySelector('#starting-message');
 let messageVisible = true;
 
+let menuIsVisibile = true;
 const menu = document.querySelector('#menu');
-const buttons = menu.querySelectorAll('button');
 
-buttons.forEach(button => {
-  button.addEventListener('click', e => {
-    e.preventDefault();
-    let target = e.target;
-    if (target.dataset.palette) {
-      colorPalette = palettes[target.dataset.palette];
-    } else if (target.dataset.pattern) {
-      drawPattern = patterns[target.dataset.pattern];
-    } else {
-      toggleMenu();
-    }
-  });
-
-  button.addEventListener('touchend', e => {
-    let target = e.changedTouches[0].target;
-    if (target.dataset.palette) {
-      colorPalette = palettes[target.dataset.palette];
-    } else if (target.dataset.pattern) {
-      drawPattern = patterns[target.dataset.pattern];
-    } else {
-      toggleMenu();
-    }
-  });
+const tabSelectors = document.querySelectorAll('.tab-selector');
+const tabs = document.querySelectorAll('.tab');
+tabSelectors.forEach(tab => {
+  tab.addEventListener('click', e => setActiveTab(e.target.dataset.tab));
 });
+let activeTab = 'colors';
+
+const hideMenu = menu.querySelector('#hide-menu');
+hideMenu.addEventListener('click', toggleMenu);
+
+const paletteSelector = document.querySelector('#palette');
+paletteSelector.addEventListener('change', e => setPalette(e.target.value));
+const modeSelector = document.querySelector('#mode');
+modeSelector.addEventListener('change', e => setColorMode(e.target.value));
+const paintbox = menu.querySelector('#paintbox');
+
+const patternSelectors = document.querySelectorAll('.pattern-selector');
+patternSelectors.forEach(selector => {
+  selector.addEventListener('click', e => setPattern(e.target.dataset.pattern));
+});
+
+setPalette('beach');
+setColorMode('controlled');
+setPattern('mirror');
 
 document.addEventListener('keydown', e => changeSettings(e));
 
