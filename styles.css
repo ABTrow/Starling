@@ -120,6 +120,16 @@ body {
   height: 40%;
 }
 
+#patterns button {
+  background: linear-gradient(#313638, #363738);
+  color: #e0dfd5;
+  font-family: monospace;
+  height: 3vh;
+  padding: 5px;
+  margin: 2px;
+  border: 1px solid #e8e9eb;
+}
+
 #starting-message {
   position: absolute;
   top: 45%;
