@@ -34,7 +34,8 @@ body {
   align-items: center;
   width: 100vw;
   height: 20vh;
-  background-color: rgba(247, 241, 225, 0.25);
+  background: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.2));
+  border-bottom: 1px solid beige;
   padding: 2% 0;
 }
 
