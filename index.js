@@ -6,6 +6,7 @@ let viewportOrientation = window.screen.orientation
 const longTouchDuration = 1000;
 let touchTimer;
 
+let canvas, context;
 let color, colorPalette, colorMode, drawPattern;
 
 const startingMessage = document.querySelector('#starting-message');
@@ -20,6 +21,9 @@ tabSelectors.forEach(tab => {
   tab.addEventListener('click', e => setActiveTab(e.target.dataset.tab));
 });
 let activeTab = 'colors';
+
+let clearButton = document.querySelector('#clear-canvas');
+clearButton.addEventListener('click', () => clearCanvas(canvas, context));
 
 const hideMenu = menu.querySelector('#hide-menu');
 hideMenu.addEventListener('click', toggleMenu);
@@ -41,7 +45,7 @@ setPattern('mirror');
 
 document.addEventListener('keydown', e => changeSettings(e));
 
-let canvas = document.createElement('canvas');
+canvas = document.createElement('canvas');
 let frame = document.querySelector('#frame');
 
 canvas.width = viewportWidth;
@@ -49,7 +53,7 @@ canvas.height = viewportHeight;
 
 frame.appendChild(canvas);
 
-let context = canvas.getContext('2d');
+context = canvas.getContext('2d');
 context.lineJoin = context.lineCap = 'round';
 
 // Set size of background gradient

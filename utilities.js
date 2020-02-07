@@ -156,3 +156,24 @@ const setActiveTab = tabName => {
 const setPattern = newPattern => {
   drawPattern = patterns[newPattern];
 };
+
+const clearCanvas = (canvas, context) => {
+  context.clearRect(0, 0, canvas.width, canvas.length);
+
+  // Set size of background gradient
+  let gradient = context.createLinearGradient(
+    0,
+    0,
+    viewportWidth,
+    viewportHeight
+  );
+
+  // Add three color stops
+  gradient.addColorStop(0, '#A1ACC4');
+  gradient.addColorStop(0.5, '#97A7C9');
+  gradient.addColorStop(1, '#BFD4FF');
+
+  // Set the fill style and draw a rectangle
+  context.fillStyle = gradient;
+  context.fillRect(0, 0, viewportWidth, viewportHeight);
+};
