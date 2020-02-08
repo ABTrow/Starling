@@ -5,47 +5,53 @@ let viewportOrientation = window.screen.orientation
   : window.orientation;
 const longTouchDuration = 1000;
 let touchTimer;
-let menuIsVisibile = true;
-let color = palettes.beach[0];
 
-let drawPattern = patterns.one;
-let colorPalette = palettes.beach;
-let colorMode = 'random-lines';
+let canvas, context;
+let color, colorPalette, colorMode, drawPattern;
 
 const startingMessage = document.querySelector('#starting-message');
 let messageVisible = true;
 
+let menuIsVisibile = true;
 const menu = document.querySelector('#menu');
-const buttons = menu.querySelectorAll('button');
 
-buttons.forEach(button => {
-  button.addEventListener('click', e => {
-    e.preventDefault();
-    let target = e.target;
-    if (target.dataset.palette) {
-      colorPalette = palettes[target.dataset.palette];
-    } else if (target.dataset.pattern) {
-      drawPattern = patterns[target.dataset.pattern];
-    } else {
-      toggleMenu();
-    }
-  });
-
-  button.addEventListener('touchend', e => {
-    let target = e.changedTouches[0].target;
-    if (target.dataset.palette) {
-      colorPalette = palettes[target.dataset.palette];
-    } else if (target.dataset.pattern) {
-      drawPattern = patterns[target.dataset.pattern];
-    } else {
-      toggleMenu();
-    }
-  });
+const tabSelectors = document.querySelectorAll('.tab-selector');
+const tabs = document.querySelectorAll('.tab');
+tabSelectors.forEach(tab => {
+  tab.addEventListener('click', e => setActiveTab(e.target.dataset.tab));
+  tab.addEventListener('touchend', e => setActiveTab(e.target.dataset.tab));
 });
+let activeTab = 'colors';
+
+let clearButton = document.querySelector('#clear-canvas');
+clearButton.addEventListener('click', () => resetCanvas(canvas, context));
+clearButton.addEventListener('touchend', () => resetCanvas(canvas, context));
+
+const hideMenu = menu.querySelector('#hide-menu');
+hideMenu.addEventListener('click', toggleMenu);
+hideMenu.addEventListener('touchend', toggleMenu);
+
+const paletteSelector = document.querySelector('#palette');
+paletteSelector.addEventListener('change', e => setPalette(e.target.value));
+const modeSelector = document.querySelector('#mode');
+modeSelector.addEventListener('change', e => setColorMode(e.target.value));
+const paintbox = menu.querySelector('#paintbox');
+
+const patternSelectors = document.querySelectorAll('.pattern-selector');
+patternSelectors.forEach(selector => {
+  selector.addEventListener('click', e => setPattern(e.target.dataset.pattern));
+  selector.addEventListener('touchend', e =>
+    setPattern(e.target.dataset.pattern)
+  );
+});
+
+setPalette('beach');
+setColorMode('controlled');
+setPattern('mirror');
 
 document.addEventListener('keydown', e => changeSettings(e));
 
-let canvas = document.createElement('canvas');
+canvas = document.createElement('canvas');
 let frame = document.querySelector('#frame');
 
 canvas.width = viewportWidth;
@@ -53,25 +59,10 @@ canvas.height = viewportHeight;
 
 frame.appendChild(canvas);
 
-let context = canvas.getContext('2d');
+context = canvas.getContext('2d');
 context.lineJoin = context.lineCap = 'round';
 
-// Set size of background gradient
-let gradient = context.createLinearGradient(
-  0,
-  0,
-  viewportWidth,
-  viewportHeight
-);
-
-// Add three color stops
-gradient.addColorStop(0, '#A1ACC4');
-gradient.addColorStop(0.5, '#97A7C9');
-gradient.addColorStop(1, '#BFD4FF');
-
-// Set the fill style and draw a rectangle
-context.fillStyle = gradient;
-context.fillRect(0, 0, viewportWidth, viewportHeight);
+resetCanvas(canvas, context);
 
 window.onresize = adjustWindow;
 

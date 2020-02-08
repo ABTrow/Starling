@@ -1,5 +1,5 @@
 const patterns = {
-  one: (context, x1, y1, x2, y2) => {
+  mirror: (context, x1, y1, x2, y2) => {
     drawLine(context, x1, y1, x2 - rect.left, y2 - rect.top);
 
     drawLine(
@@ -15,7 +15,7 @@ const patterns = {
     drawLine(context, rect.right - x1, y1, rect.right - x2, y2 - rect.top);
   },
 
-  two: (context, x1, y1, x2, y2) => {
+  horizontal: (context, x1, y1, x2, y2) => {
     drawLine(context, x1, y1, x2 - rect.left, y2 - rect.top);
 
     drawLine(
@@ -58,7 +58,7 @@ const patterns = {
       rect.bottom - y2
     );
   },
-  three: (context, x1, y1, x2, y2) => {
+  swirl: (context, x1, y1, x2, y2) => {
     context.save();
     let rotationCount = 0;
 

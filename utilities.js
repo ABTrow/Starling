@@ -119,3 +119,62 @@ const drawLine = (context, x1, y1, x2, y2) => {
 const generateRandomColor = () => {
   return colorPalette[Math.floor(Math.random() * colorPalette.length)];
 };
+
+const setColor = newColor => {
+  color = newColor;
+};
+
+const setPalette = paletteName => {
+  while (paintbox.firstChild) {
+    paintbox.removeChild(paintbox.firstChild);
+  }
+
+  colorPalette = palettes[paletteName];
+  setColor(colorPalette[0]);
+
+  colorPalette.forEach(color => {
+    let button = document.createElement('button');
+    button.style.backgroundColor = color;
+    button.dataset.color = color;
+    button.className = 'paintbox-color';
+    button.addEventListener('click', e => setColor(e.target.dataset.color));
+    button.addEventListener('touchend', e => setColor(e.target.dataset.color));
+    paintbox.appendChild(button);
+  });
+};
+
+const setColorMode = newMode => {
+  colorMode = newMode;
+};
+
+const setActiveTab = tabName => {
+  tabs.forEach(tab => {
+    if (tab.id === tabName) tab.classList.remove('hidden');
+    else tab.classList.add('hidden');
+  });
+};
+
+const setPattern = newPattern => {
+  drawPattern = patterns[newPattern];
+};
+
+const resetCanvas = (canvas, context) => {
+  context.clearRect(0, 0, canvas.width, canvas.length);
+
+  // Set size of background gradient
+  let gradient = context.createLinearGradient(
+    0,
+    0,
+    viewportWidth,
+    viewportHeight
+  );
+
+  // Add three color stops
+  gradient.addColorStop(0, '#A1ACC4');
+  gradient.addColorStop(0.5, '#97A7C9');
+  gradient.addColorStop(1, '#BFD4FF');
+
+  // Set the fill style and draw a rectangle
+  context.fillStyle = gradient;
+  context.fillRect(0, 0, viewportWidth, viewportHeight);
+};
