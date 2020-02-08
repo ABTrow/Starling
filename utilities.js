@@ -138,6 +138,7 @@ const setPalette = paletteName => {
     button.dataset.color = color;
     button.className = 'paintbox-color';
     button.addEventListener('click', e => setColor(e.target.dataset.color));
+    button.addEventListener('touchend', e => setColor(e.target.dataset.color));
     paintbox.appendChild(button);
   });
 };
@@ -157,7 +158,7 @@ const setPattern = newPattern => {
   drawPattern = patterns[newPattern];
 };
 
-const clearCanvas = (canvas, context) => {
+const resetCanvas = (canvas, context) => {
   context.clearRect(0, 0, canvas.width, canvas.length);
 
   // Set size of background gradient
