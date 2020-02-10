@@ -52,6 +52,8 @@ body {
   display: flex;
   justify-content: center;
   width: 100vw;
+  transform: perspective(5px) rotateX(-2deg);
+  transform-origin: bottom;
 }
 
 #menu #hide-menu {
@@ -62,7 +64,7 @@ body {
   background-color: #5e5858;
   color: #e0dfd5;
   font-family: monospace;
-  border-radius: 0 0 50% 50%;
+  border-radius: 0 0 5% 5%;
   border: 1px solid #e8e9eb;
 }
 
