@@ -82,8 +82,13 @@ const changeSettings = e => {
 };
 
 const toggleMenu = () => {
-  if (menuIsVisibile) menu.id = 'menu-hidden';
-  else menu.id = 'menu';
+  if (menuIsVisibile) {
+    menu.id = 'menu-hidden';
+    hideMenu.innerHTML = 'show menu';
+  } else {
+    menu.id = 'menu-options';
+    hideMenu.innerHTML = 'hide menu';
+  }
   menuIsVisibile = !menuIsVisibile;
 };
 
@@ -125,6 +130,11 @@ const setColor = newColor => {
 };
 
 const setPalette = paletteName => {
+  paletteButtons.childNodes.forEach(button => {
+    if (button.value === paletteName) button.className = 'active';
+    else button.className = '';
+  });
+
   while (paintbox.firstChild) {
     paintbox.removeChild(paintbox.firstChild);
   }
@@ -144,6 +154,10 @@ const setPalette = paletteName => {
 };
 
 const setColorMode = newMode => {
+  modeButtons.childNodes.forEach(button => {
+    if (button.value === newMode) button.className = 'active';
+    else button.className = '';
+  });
   colorMode = newMode;
 };
 
