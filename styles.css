@@ -61,7 +61,7 @@ body {
   padding: 3px;
   align-self: center;
   text-align: center;
-  background-color: #5e5858;
+  background: linear-gradient(#313638, #363738);
   color: #e0dfd5;
   font-family: monospace;
   border-radius: 0 0 5% 5%;

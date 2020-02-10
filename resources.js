@@ -75,6 +75,6 @@ const patterns = {
 };
 
 const palettes = {
-  beach: ['#EAEFF9', '#6C8D9B', '#D3CEAD', '#E6E1C5'],
+  beach: ['#EAEFF9', '#6C8D9B', '#D3CEAD', '#E6E1C5', '#F7CFCF', '#9DEAC7'],
   forest: ['#B9FFAD', '#3F633D', '#514E3C', '#513535', '#7A0000'],
 };
