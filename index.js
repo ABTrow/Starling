@@ -1,20 +1,18 @@
+// set values to help with later canvas resizing
 let viewportWidth = Math.min(window.outerWidth, window.innerWidth);
 let viewportHeight = Math.min(window.outerHeight, window.innerHeight);
 let viewportOrientation = window.screen.orientation
   ? window.screen.orientation.type
   : window.orientation;
-const longTouchDuration = 1000;
-let touchTimer;
 
+// declare variables to prevent errors
 let canvas, context;
 let color, colorPalette, colorMode, drawPattern;
 
-const startingMessage = document.querySelector('#starting-message');
-let messageVisible = true;
-
+const menu = document.querySelector('#menu-options');
 let menuIsVisibile = true;
-const menu = document.querySelector('#menu');
 
+// set up event listeners on menu buttons
 const tabSelectors = document.querySelectorAll('.tab-selector');
 const tabs = document.querySelectorAll('.tab');
 tabSelectors.forEach(tab => {
@@ -27,14 +25,18 @@ let clearButton = document.querySelector('#clear-canvas');
 clearButton.addEventListener('click', () => resetCanvas(canvas, context));
 clearButton.addEventListener('touchend', () => resetCanvas(canvas, context));
 
-const hideMenu = menu.querySelector('#hide-menu');
+const hideMenu = document.querySelector('#hide-menu');
 hideMenu.addEventListener('click', toggleMenu);
 hideMenu.addEventListener('touchend', toggleMenu);
 
-const paletteSelector = document.querySelector('#palette');
-paletteSelector.addEventListener('change', e => setPalette(e.target.value));
-const modeSelector = document.querySelector('#mode');
-modeSelector.addEventListener('change', e => setColorMode(e.target.value));
+const paletteButtons = document.querySelector('#palette-buttons');
+paletteButtons.addEventListener('click', e => setPalette(e.target.value));
+paletteButtons.addEventListener('touchend', e => setPalette(e.target.value));
+
+const modeButtons = document.querySelector('#mode-buttons');
+modeButtons.addEventListener('click', e => setColorMode(e.target.value));
+modeButtons.addEventListener('touchend', e => setColorMode(e.target.value));
+
 const paintbox = menu.querySelector('#paintbox');
 
 const patternSelectors = document.querySelectorAll('.pattern-selector');
@@ -45,38 +47,39 @@ patternSelectors.forEach(selector => {
   );
 });
 
+// initial settings
 setPalette('beach');
 setColorMode('controlled');
 setPattern('mirror');
 
+// global event listeners
 document.addEventListener('keydown', e => changeSettings(e));
+document.addEventListener('mousedown', hideStartingMessage);
+document.addEventListener('touchstart', hideStartingMessage);
 
-canvas = document.createElement('canvas');
+// canvas creation and setup
 let frame = document.querySelector('#frame');
+canvas = document.createElement('canvas');
 
 canvas.width = viewportWidth;
 canvas.height = viewportHeight;
-
 frame.appendChild(canvas);
 
 context = canvas.getContext('2d');
 context.lineJoin = context.lineCap = 'round';
-
 resetCanvas(canvas, context);
 
 window.onresize = adjustWindow;
 
 let rect = canvas.getBoundingClientRect();
 
+// drawing defaults
 let isDrawing = false;
 let x = 0;
 let y = 0;
 
+// desktop
 canvas.addEventListener('mousedown', e => {
-  if (messageVisible) {
-    messageVisible = false;
-    startingMessage.id = 'starting-message-hidden';
-  }
   if (colorMode === 'random-lines') {
     color = generateRandomColor();
   }
@@ -110,17 +113,8 @@ canvas.addEventListener(
   e => {
     e.preventDefault();
 
-    if (e.changedTouches[0].pageY < 50) {
-      touchTimer = setTimeout(toggleMenu, longTouchDuration);
-    }
-
     if (colorMode === 'random-lines') {
       color = generateRandomColor();
-    }
-
-    if (messageVisible) {
-      messageVisible = false;
-      startingMessage.id = 'starting-message-hidden';
     }
 
     let touches = e.changedTouches;
@@ -140,8 +134,6 @@ canvas.addEventListener(
     for (let i = 0; i < touches.length; i++) {
       let idx = ongoingTouchIndexById(touches[i].identifier);
 
-      if (touchTimer && touches[i].pageY > 50) clearTimeout(touchTimer);
-
       if (idx >= 0) {
         let x1 = ongoingTouches[idx].pageX;
         let y1 = ongoingTouches[idx].pageY;
@@ -159,8 +151,7 @@ canvas.addEventListener(
 );
 
 window.addEventListener('touchend', e => {
-  event.preventDefault();
-  if (touchTimer) clearTimeout(touchTimer);
+  e.preventDefault();
   let touches = e.changedTouches;
   for (let i = 0; i < touches.length; i++) {
     let idx = ongoingTouchIndexById(touches[i].identifier);

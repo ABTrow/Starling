@@ -1,3 +1,4 @@
+// dealing with window resize and orientation changes
 const adjustWindow = () => {
   // create a temporary canvas to store current art
   const tempCanvas = document.createElement('canvas');
@@ -48,33 +49,10 @@ const adjustWindow = () => {
   viewportHeight = newHeight;
 };
 
+// toggle menu by keyboard (add more features?)
 const changeSettings = e => {
   e.preventDefault;
   switch (e.code) {
-    case 'Digit1':
-      colorPalette = palettes.beach;
-      break;
-    case 'Digit2':
-      colorPalette = palettes.forest;
-      break;
-    case 'Digit4':
-      colorMode = 'crazy-lines';
-      break;
-    case 'Digit5':
-      colorMode = 'random-lines';
-      break;
-    case 'Digit6':
-      colorMode = 'crazy-lines';
-      break;
-    case 'Digit8':
-      drawPattern = patterns.one;
-      break;
-    case 'Digit9':
-      drawPattern = patterns.two;
-      break;
-    case 'Digit0':
-      drawPattern = patterns.three;
-      break;
     case 'Space':
       toggleMenu();
       break;
@@ -82,11 +60,17 @@ const changeSettings = e => {
 };
 
 const toggleMenu = () => {
-  if (menuIsVisibile) menu.id = 'menu-hidden';
-  else menu.id = 'menu';
+  if (menuIsVisibile) {
+    menu.id = 'menu-hidden';
+    hideMenu.innerHTML = 'show menu';
+  } else {
+    menu.id = 'menu-options';
+    hideMenu.innerHTML = 'hide menu';
+  }
   menuIsVisibile = !menuIsVisibile;
 };
 
+// helper functions for touch drawing
 const copyTouch = ({ identifier, pageX, pageY }) => {
   return { identifier, pageX, pageY };
 };
@@ -102,6 +86,7 @@ const ongoingTouchIndexById = idToFind => {
   return -1; // not found
 };
 
+// helper function for drawing
 const drawLine = (context, x1, y1, x2, y2) => {
   if (colorMode === 'crazy-lines') {
     color = generateRandomColor();
@@ -116,15 +101,33 @@ const drawLine = (context, x1, y1, x2, y2) => {
   context.closePath();
 };
 
+// ensures next color is not the same as the current color
 const generateRandomColor = () => {
-  return colorPalette[Math.floor(Math.random() * colorPalette.length)];
+  let newColor;
+  do {
+    newColor = colorPalette[Math.floor(Math.random() * colorPalette.length)];
+  } while (newColor === color);
+  return newColor;
 };
 
+// set color and showfeedback in paint palette
 const setColor = newColor => {
+  if (colorMode === 'controlled') {
+    paintbox.childNodes.forEach(button => {
+      if (button.dataset.color === newColor) button.innerHTML = '✓';
+      else button.innerHTML = '';
+    });
+  }
   color = newColor;
 };
 
+// set palette and create buttons for paint colors in menu
 const setPalette = paletteName => {
+  paletteButtons.childNodes.forEach(button => {
+    if (button.value === paletteName) button.className = 'active';
+    else button.className = '';
+  });
+
   while (paintbox.firstChild) {
     paintbox.removeChild(paintbox.firstChild);
   }
@@ -143,21 +146,45 @@ const setPalette = paletteName => {
   });
 };
 
+// set color mode
 const setColorMode = newMode => {
+  modeButtons.childNodes.forEach(button => {
+    if (button.value === newMode) button.className = 'active';
+    else button.className = '';
+  });
+  if (newMode === 'controlled') {
+    paintbox.childNodes.forEach(button => {
+      if (button.dataset.color === color) button.innerHTML = '✓';
+      else button.innerHTML = '';
+    });
+  } else {
+    paintbox.childNodes.forEach(button => (button.innerHTML = ''));
+  }
   colorMode = newMode;
 };
 
+// toggle between tabs
 const setActiveTab = tabName => {
   tabs.forEach(tab => {
     if (tab.id === tabName) tab.classList.remove('hidden');
     else tab.classList.add('hidden');
   });
+  tabSelectors.forEach(selector => {
+    if (selector.dataset.tab === tabName) selector.classList.add('active');
+    else selector.classList.remove('active');
+  });
 };
 
+// set patterns
 const setPattern = newPattern => {
+  patternSelectors.forEach(button => {
+    if (button.dataset.pattern === newPattern) button.classList.add('active');
+    else button.classList.remove('active');
+  });
   drawPattern = patterns[newPattern];
 };
 
+// clear canvas then redraw background gradient
 const resetCanvas = (canvas, context) => {
   context.clearRect(0, 0, canvas.width, canvas.length);
 
@@ -177,4 +204,11 @@ const resetCanvas = (canvas, context) => {
   // Set the fill style and draw a rectangle
   context.fillStyle = gradient;
   context.fillRect(0, 0, viewportWidth, viewportHeight);
+};
+
+const hideStartingMessage = () => {
+  const startingMessage = document.querySelector('#starting-message');
+  startingMessage.id = 'starting-message-hidden';
+  document.removeEventListener('mousedown', hideStartingMessage);
+  document.removeEventListener('touchstart', hideStartingMessage);
 };
