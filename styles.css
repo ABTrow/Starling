@@ -46,6 +46,9 @@ body {
 .paintbox-color {
   width: 4vw;
   height: 2vh;
+  color: #e8e9eb;
+  text-shadow: 0 0 3px #363738;
+  font-weight: bold;
 }
 
 #menu #hide-box {

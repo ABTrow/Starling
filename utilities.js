@@ -130,6 +130,12 @@ const generateRandomColor = () => {
 };
 
 const setColor = newColor => {
+  if (colorMode === 'controlled') {
+    paintbox.childNodes.forEach(button => {
+      if (button.dataset.color === newColor) button.innerHTML = '✓';
+      else button.innerHTML = '';
+    });
+  }
   color = newColor;
 };
 
@@ -162,6 +168,14 @@ const setColorMode = newMode => {
     if (button.value === newMode) button.className = 'active';
     else button.className = '';
   });
+  if (newMode === 'controlled') {
+    paintbox.childNodes.forEach(button => {
+      if (button.dataset.color === color) button.innerHTML = '✓';
+      else button.innerHTML = '';
+    });
+  } else {
+    paintbox.childNodes.forEach(button => (button.innerHTML = ''));
+  }
   colorMode = newMode;
 };
 
