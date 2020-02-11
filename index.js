@@ -13,7 +13,7 @@ const startingMessage = document.querySelector('#starting-message');
 let messageVisible = true;
 
 let menuIsVisibile = true;
-const menu = document.querySelector('#menu');
+const menu = document.querySelector('#menu-options');
 
 const tabSelectors = document.querySelectorAll('.tab-selector');
 const tabs = document.querySelectorAll('.tab');
@@ -27,14 +27,18 @@ let clearButton = document.querySelector('#clear-canvas');
 clearButton.addEventListener('click', () => resetCanvas(canvas, context));
 clearButton.addEventListener('touchend', () => resetCanvas(canvas, context));
 
-const hideMenu = menu.querySelector('#hide-menu');
+const hideMenu = document.querySelector('#hide-menu');
 hideMenu.addEventListener('click', toggleMenu);
 hideMenu.addEventListener('touchend', toggleMenu);
 
-const paletteSelector = document.querySelector('#palette');
-paletteSelector.addEventListener('change', e => setPalette(e.target.value));
-const modeSelector = document.querySelector('#mode');
-modeSelector.addEventListener('change', e => setColorMode(e.target.value));
+const paletteButtons = document.querySelector('#palette-buttons');
+paletteButtons.addEventListener('click', e => setPalette(e.target.value));
+paletteButtons.addEventListener('touchend', e => setPalette(e.target.value));
+
+const modeButtons = document.querySelector('#mode-buttons');
+modeButtons.addEventListener('click', e => setColorMode(e.target.value));
+modeButtons.addEventListener('touchend', e => setColorMode(e.target.value));
+
 const paintbox = menu.querySelector('#paintbox');
 
 const patternSelectors = document.querySelectorAll('.pattern-selector');

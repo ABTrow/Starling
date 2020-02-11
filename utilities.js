@@ -82,8 +82,13 @@ const changeSettings = e => {
 };
 
 const toggleMenu = () => {
-  if (menuIsVisibile) menu.id = 'menu-hidden';
-  else menu.id = 'menu';
+  if (menuIsVisibile) {
+    menu.id = 'menu-hidden';
+    hideMenu.innerHTML = 'show menu';
+  } else {
+    menu.id = 'menu-options';
+    hideMenu.innerHTML = 'hide menu';
+  }
   menuIsVisibile = !menuIsVisibile;
 };
 
@@ -117,7 +122,11 @@ const drawLine = (context, x1, y1, x2, y2) => {
 };
 
 const generateRandomColor = () => {
-  return colorPalette[Math.floor(Math.random() * colorPalette.length)];
+  let newColor;
+  do {
+    newColor = colorPalette[Math.floor(Math.random() * colorPalette.length)];
+  } while (newColor === color);
+  return newColor;
 };
 
 const setColor = newColor => {
@@ -125,6 +134,11 @@ const setColor = newColor => {
 };
 
 const setPalette = paletteName => {
+  paletteButtons.childNodes.forEach(button => {
+    if (button.value === paletteName) button.className = 'active';
+    else button.className = '';
+  });
+
   while (paintbox.firstChild) {
     paintbox.removeChild(paintbox.firstChild);
   }
@@ -144,6 +158,10 @@ const setPalette = paletteName => {
 };
 
 const setColorMode = newMode => {
+  modeButtons.childNodes.forEach(button => {
+    if (button.value === newMode) button.className = 'active';
+    else button.className = '';
+  });
   colorMode = newMode;
 };
 
@@ -152,9 +170,17 @@ const setActiveTab = tabName => {
     if (tab.id === tabName) tab.classList.remove('hidden');
     else tab.classList.add('hidden');
   });
+  tabSelectors.forEach(selector => {
+    if (selector.dataset.tab === tabName) selector.classList.add('active');
+    else selector.classList.remove('active');
+  });
 };
 
 const setPattern = newPattern => {
+  patternSelectors.forEach(button => {
+    if (button.dataset.pattern === newPattern) button.classList.add('active');
+    else button.classList.remove('active');
+  });
   drawPattern = patterns[newPattern];
 };
 
