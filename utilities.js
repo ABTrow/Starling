@@ -166,9 +166,17 @@ const setActiveTab = tabName => {
     if (tab.id === tabName) tab.classList.remove('hidden');
     else tab.classList.add('hidden');
   });
+  tabSelectors.forEach(selector => {
+    if (selector.dataset.tab === tabName) selector.classList.add('active');
+    else selector.classList.remove('active');
+  });
 };
 
 const setPattern = newPattern => {
+  patternSelectors.forEach(button => {
+    if (button.dataset.pattern === newPattern) button.classList.add('active');
+    else button.classList.remove('active');
+  });
   drawPattern = patterns[newPattern];
 };
 

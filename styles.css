@@ -120,8 +120,10 @@ body {
   padding: 2px;
 }
 
-.button-box button.active {
-  background-color: #e8e9eb;
+.button-box button.active,
+#menu-sidebox button.active,
+#patterns button.active {
+  background: #e8e9eb;
   color: #363738;
 }
 
@@ -139,7 +141,7 @@ body {
 
 #paintbox button {
   width: 30%;
-  height: 40%;
+  height: 45%;
 }
 
 #patterns button {
