@@ -122,7 +122,11 @@ const drawLine = (context, x1, y1, x2, y2) => {
 };
 
 const generateRandomColor = () => {
-  return colorPalette[Math.floor(Math.random() * colorPalette.length)];
+  let newColor;
+  do {
+    newColor = colorPalette[Math.floor(Math.random() * colorPalette.length)];
+  } while (newColor === color);
+  return newColor;
 };
 
 const setColor = newColor => {
