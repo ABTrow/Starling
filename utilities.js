@@ -86,19 +86,35 @@ const ongoingTouchIndexById = idToFind => {
   return -1; // not found
 };
 
+function distanceBetween(x1, y1, x2, y2) {
+  return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+}
+function angleBetween(x1, y1, x2, y2) {
+  return Math.atan2(x2 - x1, y2 - y1);
+}
+
 // helper function for drawing
 const drawLine = (context, x1, y1, x2, y2) => {
   if (colorMode === 'crazy-lines') {
     color = generateRandomColor();
   }
 
-  context.beginPath();
-  context.strokeStyle = color;
-  context.lineWidth = 15;
-  context.moveTo(x1, y1);
-  context.lineTo(x2, y2);
-  context.stroke();
-  context.closePath();
+  const dist = distanceBetween(x1, y1, x2, y2);
+  const angle = angleBetween(x1, y1, x2, y2);
+
+  for (let i = 0; i < dist; i += 5) {
+    x = x1 + Math.sin(angle) * i;
+    y = y1 + Math.cos(angle) * i;
+
+    let radgrad = context.createRadialGradient(x, y, 3, x, y, 10);
+
+    radgrad.addColorStop(0, `${color}FF`);
+    radgrad.addColorStop(0.8, `${color}BB`);
+    radgrad.addColorStop(1, `${color}00`);
+
+    context.fillStyle = radgrad;
+    context.fillRect(x - 20, y - 20, 40, 40);
+  }
 };
 
 // ensures next color is not the same as the current color
