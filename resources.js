@@ -1,6 +1,6 @@
 const patterns = {
   mirror: (context, x1, y1, x2, y2) => {
-    drawLine(context, x1, y1, x2 - rect.left, y2 - rect.top);
+    drawLine(context, x1, y1, x2, y2);
 
     drawLine(
       context,
@@ -10,29 +10,17 @@ const patterns = {
       rect.bottom - y2
     );
 
-    drawLine(context, x1, rect.bottom - y1, x2 - rect.left, rect.bottom - y2);
+    drawLine(context, x1, rect.bottom - y1, x2, rect.bottom - y2);
 
-    drawLine(context, rect.right - x1, y1, rect.right - x2, y2 - rect.top);
+    drawLine(context, rect.right - x1, y1, rect.right - x2, y2);
   },
 
   horizontal: (context, x1, y1, x2, y2) => {
-    drawLine(context, x1, y1, x2 - rect.left, y2 - rect.top);
+    drawLine(context, x1, y1, x2, y2);
 
-    drawLine(
-      context,
-      x1 + rect.right / 2,
-      y1,
-      x2 + rect.right / 2,
-      y2 - rect.top
-    );
+    drawLine(context, x1 + rect.right / 2, y1, x2 + rect.right / 2, y2);
 
-    drawLine(
-      context,
-      x1 - rect.right / 2,
-      y1,
-      x2 - rect.right / 2,
-      y2 - rect.top
-    );
+    drawLine(context, x1 - rect.right / 2, y1, x2 - rect.right / 2, y2);
 
     drawLine(
       context,
@@ -63,7 +51,7 @@ const patterns = {
     let rotationCount = 0;
 
     while (rotationCount < 6) {
-      drawLine(context, x1, y1, x2 - rect.left, y2 - rect.top);
+      drawLine(context, x1, y1, x2, y2);
       context.translate(rect.right / 2, rect.bottom / 2);
       context.rotate((60 * Math.PI) / 180);
       context.translate(-rect.right / 2, -rect.bottom / 2);
@@ -80,7 +68,7 @@ const patterns = {
     context.scale(scale, scale);
 
     while (scale > 0.6 && rotationCount < 4) {
-      drawLine(context, x1, y1, x2 - rect.left, y2 - rect.top);
+      drawLine(context, x1, y1, x2, y2);
       const inverseScale = 1 / scale;
       patterns.fractal(context, x1, y1, x2, y2, scale * 0.8);
       context.translate(
@@ -95,6 +83,9 @@ const patterns = {
       rotationCount++;
     }
     context.restore();
+  },
+  none: (context, x1, y1, x2, y2) => {
+    drawLine(context, x1, y1, x2, y2);
   },
 };
 
