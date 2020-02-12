@@ -158,6 +158,12 @@ body {
   border: 1px solid #e8e9eb;
 }
 
+#pattern-buttons {
+  max-width: 70vw;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
 #starting-message {
   position: absolute;
   top: 45%;
