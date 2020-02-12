@@ -98,7 +98,8 @@ body {
   justify-content: space-around;
 }
 
-#color-settings {
+#color-settings,
+#pattern-settings {
   display: flex;
   flex-direction: column;
   align-items: center;

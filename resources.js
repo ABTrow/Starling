@@ -72,6 +72,30 @@ const patterns = {
 
     context.restore();
   },
+  fractal: (context, x1, y1, x2, y2, scale = 1) => {
+    console.log('looping at scale', scale);
+    context.save();
+    let rotationCount = 0;
+
+    context.scale(scale, scale);
+
+    while (scale > 0.6 && rotationCount < 4) {
+      drawLine(context, x1, y1, x2 - rect.left, y2 - rect.top);
+      const inverseScale = 1 / scale;
+      patterns.fractal(context, x1, y1, x2, y2, scale * 0.8);
+      context.translate(
+        (inverseScale * rect.right) / 2,
+        (inverseScale * rect.bottom) / 2
+      );
+      context.rotate((90 * Math.PI) / 180);
+      context.translate(
+        (inverseScale * -rect.right) / 2,
+        (inverseScale * -rect.bottom) / 2
+      );
+      rotationCount++;
+    }
+    context.restore();
+  },
 };
 
 const palettes = {
