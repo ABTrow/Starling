@@ -7,7 +7,7 @@ let viewportOrientation = window.screen.orientation
 
 // declare variables to prevent errors
 let canvas, context;
-let color, colorPalette, colorMode, drawPattern;
+let color, colorPalette, colorMode, drawPattern, brushSize;
 
 const menu = document.querySelector('#menu-options');
 let menuIsVisibile = true;
@@ -47,10 +47,14 @@ patternSelectors.forEach(selector => {
   );
 });
 
+const brushSizeSelector = document.querySelector('#brush-size');
+brushSizeSelector.addEventListener('change', e => setBrushSize(e.target.value));
+
 // initial settings
 setPalette('beach');
 setColorMode('controlled');
 setPattern('mirror');
+setBrushSize(10);
 
 // global event listeners
 document.addEventListener('keydown', e => changeSettings(e));

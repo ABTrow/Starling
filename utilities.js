@@ -106,7 +106,14 @@ const drawLine = (context, x1, y1, x2, y2) => {
     x = x1 + Math.sin(angle) * i;
     y = y1 + Math.cos(angle) * i;
 
-    let radgrad = context.createRadialGradient(x, y, 3, x, y, 10);
+    let radgrad = context.createRadialGradient(
+      x,
+      y,
+      Math.floor(brushSize / 3),
+      x,
+      y,
+      brushSize
+    );
 
     radgrad.addColorStop(0, `${color}FF`);
     radgrad.addColorStop(0.8, `${color}BB`);
@@ -177,6 +184,12 @@ const setColorMode = newMode => {
     paintbox.childNodes.forEach(button => (button.innerHTML = ''));
   }
   colorMode = newMode;
+};
+
+// set brush width
+const setBrushSize = size => {
+  console.log('setting size');
+  brushSize = size;
 };
 
 // toggle between tabs

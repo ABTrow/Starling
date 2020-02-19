@@ -61,13 +61,12 @@ const patterns = {
     context.restore();
   },
   fractal: (context, x1, y1, x2, y2, scale = 1) => {
-    console.log('looping at scale', scale);
     context.save();
     let rotationCount = 0;
 
     context.scale(scale, scale);
 
-    while (scale > 0.6 && rotationCount < 4) {
+    while (scale > 0.6 && rotationCount < 5) {
       drawLine(context, x1, y1, x2, y2);
       const inverseScale = 1 / scale;
       patterns.fractal(context, x1, y1, x2, y2, scale * 0.8);
@@ -75,7 +74,7 @@ const patterns = {
         (inverseScale * rect.right) / 2,
         (inverseScale * rect.bottom) / 2
       );
-      context.rotate((90 * Math.PI) / 180);
+      context.rotate((72 * Math.PI) / 180);
       context.translate(
         (inverseScale * -rect.right) / 2,
         (inverseScale * -rect.bottom) / 2
@@ -83,6 +82,22 @@ const patterns = {
       rotationCount++;
     }
     context.restore();
+  },
+  stamp: (context, x1, y1, x2, y2) => {
+    const stampWidth = rect.right / 4;
+    const stampHeight = rect.bottom / 4;
+
+    for (let xBase = -3; xBase < 4; xBase++) {
+      for (let yBase = -3; yBase < 4; yBase++) {
+        drawLine(
+          context,
+          x1 + stampWidth * xBase,
+          y1 + stampHeight * yBase,
+          x2 + stampWidth * xBase,
+          y2 + stampHeight * yBase
+        );
+      }
+    }
   },
   none: (context, x1, y1, x2, y2) => {
     drawLine(context, x1, y1, x2, y2);
