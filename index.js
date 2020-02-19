@@ -49,6 +49,7 @@ patternSelectors.forEach(selector => {
 
 const brushSizeSelector = document.querySelector('#brush-size');
 brushSizeSelector.addEventListener('change', e => setBrushSize(e.target.value));
+brushSizeSelector.addEventListener('input', e => setBrushSize(e.target.value));
 
 // initial settings
 setPalette('beach');

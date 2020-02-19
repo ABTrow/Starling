@@ -188,7 +188,6 @@ const setColorMode = newMode => {
 
 // set brush width
 const setBrushSize = size => {
-  console.log('setting size');
   brushSize = size;
 };
 
